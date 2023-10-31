@@ -1,0 +1,27 @@
+# Test Request Without Authorization Header
+
+# Send a GET request without the 'Authorization' header
+GET http://localhost:5000
+?? status == 403
+?? body == Authorization header not set
+
+---
+
+# Test Request With a JWT Token (Invalid Issuer)
+GET http://localhost:5000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaXNzIjoiTWljcm9zb2Z0IiwiaWF0IjoxNTE2MjM5MDIyfQ.uKOlANF4HQ3dKuqAKcAQ2ICgtRWNZwt5xPOpteeyZJo
+?? status == 403
+?? body == This token with issuer 'Microsoft' doesn't belong to this domain
+
+---
+
+# Test Request With a JWT Token (Valid Issuer)
+GET http://localhost:5000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaXNzIjoiUmF5dmFyeiJ9.M217m1Inmi2o4tdAWNaF2cL8mBTiiN2Ahx8PNmK2XRg
+?? status == 200
+
+# Test Request With a JWT Token ('iat')
+GET http://localhost:5000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaXNzIjoiUmF5dmFyeiIsImlhdCI6MTY5ODU4MDgyMX0.IqGh9OzRS8uwpjdJVNEp39cEcaCJv3yaNnpEZK0GI7Y
+?? status == 403
+?? body == Refresh Token
