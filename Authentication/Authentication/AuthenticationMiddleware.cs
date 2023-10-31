@@ -35,7 +35,7 @@ public class AuthenticationMiddleware
 
         var issuer = GetIssuerFromToken(tokenObject);
 
-        if (issuer != "Rayvarz")
+        if (issuer != string.Empty && issuer != "Rayvarz")
         {
             context.Response.StatusCode = 403;
             context.Response.ContentType = "text/plain";
@@ -48,6 +48,14 @@ public class AuthenticationMiddleware
             context.Response.StatusCode = 403;
             context.Response.ContentType = "text/plain";
             await context.Response.WriteAsync("Refresh Token");
+            return;
+        }
+
+        if (CheckIfExpHasPassed(tokenObject))
+        {
+            context.Response.StatusCode = 403;
+            context.Response.ContentType = "text/plain";
+            await context.Response.WriteAsync("Token Expired");
             return;
         }
 
@@ -86,6 +94,37 @@ public class AuthenticationMiddleware
 
                 return iatDate < validDate;
             }
+        }
+
+        return false;
+    }
+
+    private bool CheckIfExpHasPassed(IDictionary<string, object> tokenObject)
+    {
+        if (tokenObject.TryGetValue("exp", out var expirationTime))
+        {
+            if (expirationTime.ToString() is string expString)
+            {
+                if (long.TryParse(expString, out var exp))
+                {
+                    var expTime = DateTimeOffset.FromUnixTimeSeconds(exp).DateTime;
+                    var today = DateTime.Now;
+
+                    return expTime < today;
+                }
+                else
+                {
+                    Console.WriteLine("Failed to parse 'exp' as long: " + expString);
+                }
+            }
+            else
+            {
+                Console.WriteLine("'exp' is not a string: " + expirationTime.ToString());
+            }
+        }
+        else
+        {
+            Console.WriteLine("Token does not contain 'exp' claim.");
         }
 
         return false;

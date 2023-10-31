@@ -20,8 +20,18 @@ GET http://localhost:5000
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaXNzIjoiUmF5dmFyeiJ9.M217m1Inmi2o4tdAWNaF2cL8mBTiiN2Ahx8PNmK2XRg
 ?? status == 200
 
+---
+
 # Test Request With a JWT Token ('iat')
 GET http://localhost:5000
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaXNzIjoiUmF5dmFyeiIsImlhdCI6MTY5ODU4MDgyMX0.IqGh9OzRS8uwpjdJVNEp39cEcaCJv3yaNnpEZK0GI7Y
 ?? status == 403
 ?? body == Refresh Token
+
+---
+
+# Test Request With a JWT Token ('exp')
+GET http://localhost:5000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiZXhwIjoiMTY5NjExODQwMSJ9.QQTCqyYD23ZV_jSYPlo_m8bFClqy9oQbutWQDquJtvo
+?? status = 403
+?? body == Token Expired
