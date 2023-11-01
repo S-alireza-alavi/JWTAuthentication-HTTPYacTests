@@ -28,7 +28,7 @@ public class AuthenticationMiddleware
             .WithValidationParameters(parameters => parameters.ValidateSignature = false)
             .Decode<IDictionary<string, object>>(token);
 
-        var issuer = GetIssuerFromToken(tokenObject);
+        var issuer = GetIssuer(tokenObject);
 
         if (issuer != string.Empty && issuer != "Rayvarz")
         {
@@ -57,7 +57,7 @@ public class AuthenticationMiddleware
         await _next(context);
     }
 
-    private string GetIssuerFromToken(IDictionary<string, object> tokenObject)
+    private string GetIssuer(IDictionary<string, object> tokenObject)
     {
         try
         {
