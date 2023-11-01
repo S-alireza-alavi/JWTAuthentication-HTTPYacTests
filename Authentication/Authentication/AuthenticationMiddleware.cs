@@ -28,7 +28,7 @@ public class AuthenticationMiddleware
             .WithValidationParameters(parameters => parameters.ValidateSignature = false)
             .Decode<IDictionary<string, object>>(token);
 
-        var issuer = GetIssuerFromToken(tokenObject);
+        var issuer = GetIssuer(tokenObject);
 
         if (issuer != string.Empty && issuer != "Rayvarz")
         {
@@ -38,7 +38,7 @@ public class AuthenticationMiddleware
             return;
         }
 
-        if (CheckIfIatIsLowerThanNow(tokenObject))
+        if (CheckIssuedAt(tokenObject))
         {
             context.Response.StatusCode = 403;
             context.Response.ContentType = "text/plain";
@@ -57,7 +57,7 @@ public class AuthenticationMiddleware
         await _next(context);
     }
 
-    private string GetIssuerFromToken(IDictionary<string, object> tokenObject)
+    private string GetIssuer(IDictionary<string, object> tokenObject)
     {
         try
         {
@@ -77,7 +77,7 @@ public class AuthenticationMiddleware
         }
     }
 
-    private bool CheckIfIatIsLowerThanNow(IDictionary<string, object> tokenObject)
+    private bool CheckIssuedAt(IDictionary<string, object> tokenObject)
     {
         if (tokenObject.TryGetValue("iat", out var issuedAt) && issuedAt is JsonElement iatElement)
         {
