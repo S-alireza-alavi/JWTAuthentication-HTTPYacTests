@@ -1,9 +1,4 @@
-using JWT;
-using JWT.Algorithms;
 using JWT.Builder;
-using JWT.Serializers;
-using Newtonsoft.Json;
-using System.Diagnostics.Eventing.Reader;
 using System.Text.Json;
 
 namespace Authentication;
@@ -51,7 +46,7 @@ public class AuthenticationMiddleware
             return;
         }
 
-        if (CheckIfExpHasPassed(tokenObject))
+        if (CheckExpiration(tokenObject))
         {
             context.Response.StatusCode = 403;
             context.Response.ContentType = "text/plain";
@@ -99,7 +94,7 @@ public class AuthenticationMiddleware
         return false;
     }
 
-    private bool CheckIfExpHasPassed(IDictionary<string, object> tokenObject)
+    private bool CheckExpiration(IDictionary<string, object> tokenObject)
     {
         if (tokenObject.TryGetValue("exp", out var expirationTime))
         {
