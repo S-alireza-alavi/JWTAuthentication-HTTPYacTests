@@ -13,17 +13,14 @@ public class UserIdMiddleWare
 
     public async Task Invoke(HttpContext context)
     {
-        if (context.User.Identity.IsAuthenticated)
-        {
-            var userIdClaim = context.User.FindFirst(ClaimTypes.NameIdentifier);
+        var userIdClaim = context.User.FindFirst(claim => claim.Type == "UserID" && claim.Value == "1001");
+            
             if (userIdClaim != null)
             {
                 var userId = userIdClaim.Value;
-                
                 context.Items["UserID"] = userId;
             }
-        }
 
-        await _next(context);
+            await _next(context);
     }
 }
