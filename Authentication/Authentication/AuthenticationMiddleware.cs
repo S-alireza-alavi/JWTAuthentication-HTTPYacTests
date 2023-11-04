@@ -54,8 +54,7 @@ public class AuthenticationMiddleware
             await context.Response.WriteAsync("Token Expired");
             return;
         }
-        
-        var userClaimsPrincipal = context.User;
+
         var claims = new List<Claim>();
 
         foreach (var claim in tokenObject)
