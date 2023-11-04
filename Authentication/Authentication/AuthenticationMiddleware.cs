@@ -56,21 +56,19 @@ public class AuthenticationMiddleware
         }
         
         var userClaimsPrincipal = context.User;
+        var claims = new List<Claim>();
 
         foreach (var claim in tokenObject)
         {
             var claimType = claim.Key;
             var claimValue = claim.Value.ToString();
-
-            var claims = new List<Claim>
-            {
-                new Claim(claimType, claimValue)
-            };
             
-            var identity = new ClaimsIdentity(claims, "JWT");
-            context.User.AddIdentity(identity);
+            claims.Add(new Claim(claimType, claimValue));
         }
-
+        
+        var identity = new ClaimsIdentity(claims, "JWT");
+        context.User.AddIdentity(identity);
+        
         context.Response.StatusCode = 200;
 
         await _next(context);
