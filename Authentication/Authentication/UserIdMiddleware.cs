@@ -13,7 +13,7 @@ public class UserIdMiddleware
 
     public async Task Invoke(HttpContext context)
     {
-        var userIdClaim = context.User.FindFirst(claim => claim.Type == "UserID");
+        var userIdClaim = context.User.Claims.FirstOrDefault(claim => claim.Type == "UserID");
 
         if (userIdClaim != null)
         {
