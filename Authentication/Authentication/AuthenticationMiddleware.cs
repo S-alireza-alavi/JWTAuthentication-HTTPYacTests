@@ -64,7 +64,7 @@ public class AuthenticationMiddleware
                 new Claim(ClaimTypes.NameIdentifier, userId)
             };
 
-            var identity = new ClaimsIdentity(claims, "custom");
+            var identity = new ClaimsIdentity(claims, "JWT");
             context.User = new ClaimsPrincipal(identity);
             return;
         }
