@@ -58,8 +58,6 @@ public class AuthenticationMiddleware
         if (CheckUserId(tokenObject, out var userId))
         {
             context.Response.StatusCode = 200;
-            context.Response.ContentType = "text/plain";
-            await context.Response.WriteAsync($"UserId: {userId}");
 
             var claims = new List<Claim>
             {
@@ -130,7 +128,7 @@ public class AuthenticationMiddleware
     
     private bool CheckUserId(IDictionary<string, object> tokenObject, out string userId)
     {
-        if (tokenObject.TryGetValue("UserId", out var userIdValue))
+        if (tokenObject.TryGetValue("UserID", out var userIdValue))
         {
             userId = userIdValue.ToString();
             return true;
