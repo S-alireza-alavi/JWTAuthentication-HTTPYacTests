@@ -4,6 +4,7 @@ var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
 app.UseMiddleware<AuthenticationMiddleware>();
+app.UseMiddleware<UserIdMiddleWare>();
 
 app.MapGet("/", () => "Hello World!");
 
