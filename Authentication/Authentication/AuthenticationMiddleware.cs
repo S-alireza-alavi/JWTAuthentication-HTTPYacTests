@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using JWT.Builder;
 using System.Text.Json;
 
@@ -51,6 +52,22 @@ public class AuthenticationMiddleware
             context.Response.StatusCode = 403;
             context.Response.ContentType = "text/plain";
             await context.Response.WriteAsync("Token Expired");
+            return;
+        }
+
+        if (CheckUserId(tokenObject, out var userId))
+        {
+            context.Response.StatusCode = 200;
+            context.Response.ContentType = "text/plain";
+            await context.Response.WriteAsync($"UserId: {userId}");
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, userId)
+            };
+
+            var identity = new ClaimsIdentity(claims, "custom");
+            context.User = new ClaimsPrincipal(identity);
             return;
         }
 
@@ -109,5 +126,19 @@ public class AuthenticationMiddleware
         }
 
         return false;
+    }
+    
+    private bool CheckUserId(IDictionary<string, object> tokenObject, out string userId)
+    {
+        if (tokenObject.TryGetValue("UserId", out var userIdValue))
+        {
+            userId = userIdValue.ToString();
+            return true;
+        }
+        else
+        {
+            userId = null;
+            return false;
+        }
     }
 }
