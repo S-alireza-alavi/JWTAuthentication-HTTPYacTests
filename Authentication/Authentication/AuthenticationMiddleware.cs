@@ -57,15 +57,17 @@ public class AuthenticationMiddleware
 
         if (CheckUserId(tokenObject, out var userId))
         {
-            context.Response.StatusCode = 200;
+            var userClaimsPrincipal = context.User;
 
-            var claims = new List<Claim>
+            foreach (var claim in tokenObject)
             {
-                new Claim(ClaimTypes.NameIdentifier, userId)
-            };
-
-            var identity = new ClaimsIdentity(claims, "JWT");
-            context.User = new ClaimsPrincipal(identity);
+                var claimType = claim.Key;
+                var claimValue = claim.Value.ToString();
+                var newClaim = new Claim(claimType, claimValue);
+                ((ClaimsIdentity)userClaimsPrincipal.Identity).AddClaim(newClaim);
+            }
+            
+            context.Response.StatusCode = 200;
             return;
         }
 
