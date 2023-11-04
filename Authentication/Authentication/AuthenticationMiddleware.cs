@@ -54,22 +54,24 @@ public class AuthenticationMiddleware
             await context.Response.WriteAsync("Token Expired");
             return;
         }
+        
+        var userClaimsPrincipal = context.User;
 
-        if (CheckUserId(tokenObject, out var userId))
+        foreach (var claim in tokenObject)
         {
-            var userClaimsPrincipal = context.User;
+            var claimType = claim.Key;
+            var claimValue = claim.Value.ToString();
 
-            foreach (var claim in tokenObject)
+            var claims = new List<Claim>
             {
-                var claimType = claim.Key;
-                var claimValue = claim.Value.ToString();
-                var newClaim = new Claim(claimType, claimValue);
-                ((ClaimsIdentity)userClaimsPrincipal.Identity).AddClaim(newClaim);
-            }
+                new Claim(claimType, claimValue)
+            };
             
-            context.Response.StatusCode = 200;
-            return;
+            var identity = new ClaimsIdentity(claims, "JWT");
+            context.User.AddIdentity(identity);
         }
+
+        context.Response.StatusCode = 200;
 
         await _next(context);
     }
@@ -126,19 +128,5 @@ public class AuthenticationMiddleware
         }
 
         return false;
-    }
-    
-    private bool CheckUserId(IDictionary<string, object> tokenObject, out string userId)
-    {
-        if (tokenObject.TryGetValue("UserID", out var userIdValue))
-        {
-            userId = userIdValue.ToString();
-            return true;
-        }
-        else
-        {
-            userId = null;
-            return false;
-        }
     }
 }
