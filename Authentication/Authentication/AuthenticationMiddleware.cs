@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using JWT.Builder;
 using System.Text.Json;
 
@@ -53,6 +54,21 @@ public class AuthenticationMiddleware
             await context.Response.WriteAsync("Token Expired");
             return;
         }
+
+        var claims = new List<Claim>();
+
+        foreach (var claim in tokenObject)
+        {
+            var claimType = claim.Key;
+            var claimValue = claim.Value.ToString();
+            
+            claims.Add(new Claim(claimType, claimValue));
+        }
+        
+        var identity = new ClaimsIdentity(claims, "JWT");
+        context.User.AddIdentity(identity);
+        
+        context.Response.StatusCode = 200;
 
         await _next(context);
     }

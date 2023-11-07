@@ -35,3 +35,8 @@ GET http://localhost:5000
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiZXhwIjoiMTY5NjExODQwMSJ9.QQTCqyYD23ZV_jSYPlo_m8bFClqy9oQbutWQDquJtvo
 ?? status = 403
 ?? body == Token Expired
+
+# Test Request With a JWT Token ('UserID')
+GET http://localhost:5000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaXNzIjoiUmF5dmFyeiIsIlVzZXJJRCI6IjEwMDEifQ.3gOITywfQJrzfoBrCF_IMpY-tbHpH1szUY4QvbB2rfs
+?? status == 200
