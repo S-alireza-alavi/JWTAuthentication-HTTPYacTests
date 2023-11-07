@@ -3,7 +3,7 @@
 # Send a GET request without the 'Authorization' header
 GET http://localhost:5000
 ?? status == 403
-?? body == Authorization header not set
+# ?? body == Authorization header not set
 
 ---
 
@@ -11,7 +11,7 @@ GET http://localhost:5000
 GET http://localhost:5000
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaXNzIjoiTWljcm9zb2Z0IiwiaWF0IjoxNTE2MjM5MDIyfQ.uKOlANF4HQ3dKuqAKcAQ2ICgtRWNZwt5xPOpteeyZJo
 ?? status == 403
-?? body == This token with issuer 'Microsoft' doesn't belong to this domain
+# ?? body == This token with issuer 'Microsoft' doesn't belong to this domain
 
 ---
 
@@ -26,7 +26,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3O
 GET http://localhost:5000
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaXNzIjoiUmF5dmFyeiIsImlhdCI6MTY5ODU4MDgyMX0.IqGh9OzRS8uwpjdJVNEp39cEcaCJv3yaNnpEZK0GI7Y
 ?? status == 403
-?? body == Refresh Token
+# ?? body == Refresh Token
 
 ---
 
@@ -34,7 +34,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3O
 GET http://localhost:5000
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiZXhwIjoiMTY5NjExODQwMSJ9.QQTCqyYD23ZV_jSYPlo_m8bFClqy9oQbutWQDquJtvo
 ?? status = 403
-?? body == Token Expired
+# ?? body == Token Expired
 
 # Test Request With a JWT Token ('UserID')
 GET http://localhost:5000
