@@ -39,13 +39,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             {
                 if (context.Exception is SecurityTokenInvalidIssuerException)
                 {
-                    context.Response.StatusCode = 403;
-                    context.Response.WriteAsync("This token with issuer 'Microsoft' doesn't belong to this domain");
+                    context.Response.Headers.Add("TokenException", "This token with issuer 'Microsoft' doesn't belong to this domain");
+                    // context.Response.StatusCode = 403;
+                    // context.Response.WriteAsync("This token with issuer 'Microsoft' doesn't belong to this domain");
                 }
                 
                 else if (context.Exception is SecurityTokenExpiredException)
                 {
-                    context.Response.StatusCode = 403;
+                    context.Response.Headers.Add("TokenException", "Token Expired");
+                    // context.Response.StatusCode = 403;
                     // TODO: Fix this later
                     // context.Response.WriteAsync("Token Expired");
                 }
@@ -61,9 +63,36 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 var app = builder.Build();
 
+// app.Use(async (context, next) =>
+// {
+//     if (context.Response.Headers.ContainsKey("TokenException"))
+//     {
+//         context.Response.StatusCode = 403;
+//         context.Response.ContentType = "text/plain";
+//         await context.Response.WriteAsync(context.Response.Headers["TokenException"]);
+//     }
+//     else
+//     {
+//         await next();
+//     }
+// });
+
 // app.UseMiddleware<AuthenticationMiddleware>();
 app.UseAuthentication();
 app.UseMiddleware<UserIdMiddleware>();
+app.Use(async (context, next) =>
+{
+    if (context.Response.Headers.ContainsKey("TokenException"))
+    {
+        context.Response.StatusCode = 403;
+        context.Response.ContentType = "text/plain";
+        await context.Response.WriteAsync(context.Response.Headers["TokenException"]);
+    }
+    else
+    {
+        await next();
+    }
+});
 
 // app.MapGet("/", context =>
 // {
