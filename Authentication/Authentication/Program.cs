@@ -43,9 +43,17 @@ app.Use(async (context, next) =>
 {
     if (context.Response.Headers.ContainsKey("TokenException"))
     {
+        var tokenException = context.Response.Headers["TokenException"];
         context.Response.StatusCode = 403;
-        context.Response.ContentType = "text/plain";
-        await context.Response.WriteAsync(context.Response.Headers["TokenException"]);
+        
+        if (tokenException == "SecurityTokenInvalidIssuerException")
+        {
+            await context.Response.WriteAsync("This token with issuer 'Microsoft' doesn't belong to this domain");
+        }
+        else if (tokenException == "SecurityTokenExpiredException")
+        {
+            await context.Response.WriteAsync("Token Expired");
+        }
     }
     else
     {
