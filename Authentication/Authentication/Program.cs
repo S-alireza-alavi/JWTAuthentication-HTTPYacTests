@@ -23,36 +23,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 return jwtSecurityToken;
             }
         };
-        
-        // JwtBearerEvents jwtBearerEvents = new JwtBearerEvents
-        // {
-        //     OnAuthenticationFailed = delegate(AuthenticationFailedContext context)
-        //     {
-        //         Exception contextException = context.Exception;
-        //         return Task.CompletedTask;
-        //     }
-        // };
 
         JwtBearerEvents jwtBearerEvents = new JwtBearerEvents
         {
             OnAuthenticationFailed = context =>
             {
-                if (context.Exception is SecurityTokenInvalidIssuerException)
-                {
-                    context.Response.Headers.Add("TokenException", "This token with issuer 'Microsoft' doesn't belong to this domain");
-                    // context.Response.StatusCode = 403;
-                    // context.Response.WriteAsync("This token with issuer 'Microsoft' doesn't belong to this domain");
-                }
-                
-                else if (context.Exception is SecurityTokenExpiredException)
-                {
-                    context.Response.Headers.Add("TokenException", "Token Expired");
-                    // context.Response.StatusCode = 403;
-                    // TODO: Fix this later
-                    // context.Response.WriteAsync("Token Expired");
-                }
-                
-                // Exception contextException = context.Exception;
+                context.Response.Headers.Add("TokenException", $"{context.Exception.GetType().Name}");
 
                 return Task.CompletedTask;
             }
@@ -62,24 +38,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 var app = builder.Build();
-
-// app.Use(async (context, next) =>
-// {
-//     if (context.Response.Headers.ContainsKey("TokenException"))
-//     {
-//         context.Response.StatusCode = 403;
-//         context.Response.ContentType = "text/plain";
-//         await context.Response.WriteAsync(context.Response.Headers["TokenException"]);
-//     }
-//     else
-//     {
-//         await next();
-//     }
-// });
-
-// app.UseMiddleware<AuthenticationMiddleware>();
 app.UseAuthentication();
-app.UseMiddleware<UserIdMiddleware>();
 app.Use(async (context, next) =>
 {
     if (context.Response.Headers.ContainsKey("TokenException"))
@@ -93,33 +52,8 @@ app.Use(async (context, next) =>
         await next();
     }
 });
-
-// app.MapGet("/", context =>
-// {
-//     if (context.User.Identity is { IsAuthenticated: true })
-//     {
-//         return context.Response.WriteAsync("Hello World!");
-//     }
-//     
-//     return Task.CompletedTask;
-// });
+app.UseMiddleware<UserIdMiddleware>();
 
 app.MapGet("/", () => "Hello World!");
 
 app.Run();
-
-// Save this for further usage
-/*
-if (context.User.FindFirst("iat") is { Value: var iatClaimValue })
-        {
-            if (long.TryParse(iatClaimValue, out long iatTimeStamp))
-            {
-                var iatTime = DateTimeOffset.FromUnixTimeSeconds(iatTimeStamp);
-
-                if (iatTime >= DateTime.Now)
-                {
-                    return context.Response.WriteAsync("Refresh Token");
-                }
-            }
-        }
-*/
