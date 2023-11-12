@@ -1,5 +1,4 @@
-# Test Request Without Authorization Header
-
+### Without JWT
 # Send a GET request without the 'Authorization' header
 GET http://localhost:5000
 ?? status == 403
@@ -7,6 +6,7 @@ GET http://localhost:5000
 
 ---
 
+### Invalid Iss
 # Test Request With a JWT Token (Invalid Issuer)
 GET http://localhost:5000
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaXNzIjoiTWljcm9zb2Z0IiwiaWF0IjoxNTE2MjM5MDIyfQ.uKOlANF4HQ3dKuqAKcAQ2ICgtRWNZwt5xPOpteeyZJo
@@ -15,6 +15,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3O
 
 ---
 
+### Valid Iss
 # Test Request With a JWT Token (Valid Issuer)
 GET http://localhost:5000
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaXNzIjoiUmF5dmFyeiJ9.M217m1Inmi2o4tdAWNaF2cL8mBTiiN2Ahx8PNmK2XRg
@@ -22,6 +23,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3O
 
 ---
 
+### Iat
 # Test Request With a JWT Token ('iat')
 GET http://localhost:5000
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaXNzIjoiUmF5dmFyeiIsImlhdCI6MTY5ODU4MDgyMX0.IqGh9OzRS8uwpjdJVNEp39cEcaCJv3yaNnpEZK0GI7Y
@@ -30,12 +32,14 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3O
 
 ---
 
+### Exp
 # Test Request With a JWT Token ('exp')
 GET http://localhost:5000
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiZXhwIjoiMTY5NjExODQwMSJ9.QQTCqyYD23ZV_jSYPlo_m8bFClqy9oQbutWQDquJtvo
-?? status = 403
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiZXhwIjoxNjk2MTE4NDAxfQ.UYXfcgd4xNqZ6G1fRbfk1s-7nqLPPbAcIPOoOpR8U8w
+?? status == 403
 ?? body == Token Expired
 
+### UserID
 # Test Request With a JWT Token ('UserID')
 GET http://localhost:5000
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaXNzIjoiUmF5dmFyeiIsIlVzZXJJRCI6IjEwMDEifQ.3gOITywfQJrzfoBrCF_IMpY-tbHpH1szUY4QvbB2rfs
