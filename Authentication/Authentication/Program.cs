@@ -69,19 +69,17 @@ app.Use(async (context, next) =>
 
         if (tokenException == "AuthorizationHeaderException")
             await context.Response.WriteAsync("Authorization header not set");
-
         else if (tokenException == "IatHasPassedException")
             await context.Response.WriteAsync("Refresh Token");
-
         else if (tokenException == "SecurityTokenInvalidIssuerException")
             await context.Response.WriteAsync("This token with issuer 'Microsoft' doesn't belong to this domain");
-
         else if (tokenException == "SecurityTokenExpiredException")
             await context.Response.WriteAsync("Token Expired");
     }
     else
         await next();
 });
+
 app.UseMiddleware<UserIdMiddleware>();
 
 app.MapGet("/", () => "Hello World!");
