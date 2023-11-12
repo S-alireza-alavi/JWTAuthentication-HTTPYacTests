@@ -1,4 +1,4 @@
-### Without JWT
+### Without Authorization header
 # Send a GET request without the 'Authorization' header
 GET http://localhost:5000
 ?? status == 403
@@ -23,7 +23,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3O
 
 ---
 
-### Iat
+### Iat (Refresh Token)
 # Test Request With a JWT Token ('iat')
 GET http://localhost:5000
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaXNzIjoiUmF5dmFyeiIsImlhdCI6MTY5ODU4MDgyMX0.IqGh9OzRS8uwpjdJVNEp39cEcaCJv3yaNnpEZK0GI7Y
@@ -32,7 +32,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3O
 
 ---
 
-### Exp
+### Expired Token
 # Test Request With a JWT Token ('exp')
 GET http://localhost:5000
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiZXhwIjoxNjk2MTE4NDAxfQ.UYXfcgd4xNqZ6G1fRbfk1s-7nqLPPbAcIPOoOpR8U8w
