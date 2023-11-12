@@ -35,6 +35,20 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
                 return Task.CompletedTask;
             },
+            OnTokenValidated = context =>
+            {
+                var iatClaim = context.Principal.Claims.FirstOrDefault(c => c.Type == "iat");
+                if (iatClaim != null && long.TryParse(iatClaim.Value, out long iatTimeStamp))
+                {
+                    var iatTime = DateTimeOffset.FromUnixTimeSeconds(iatTimeStamp);
+                    if (iatTime <= new DateTime(2023,11, 01))
+                    {
+                        context.Response.Headers.Add("TokenException", "IatHasPassedException");
+                    }
+                }
+                
+                return Task.CompletedTask;
+            },
             OnAuthenticationFailed = context =>
             {
                 context.Response.Headers.Add("TokenException", $"{context.Exception.GetType().Name}");
@@ -58,6 +72,10 @@ app.Use(async (context, next) =>
         if (tokenException == "AuthorizationHeaderException")
         {
             await context.Response.WriteAsync("Authorization header not set");
+        }
+        else if (tokenException == "IatHasPassedException")
+        {
+            await context.Response.WriteAsync("Refresh Token");
         }
         else if (tokenException == "SecurityTokenInvalidIssuerException")
         {
