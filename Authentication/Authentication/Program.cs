@@ -26,6 +26,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
         JwtBearerEvents jwtBearerEvents = new JwtBearerEvents
         {
+            OnMessageReceived = context =>
+            {
+                if (context.Request.Headers["Authorization"].Count == 0)
+                {
+                    context.Response.Headers.Add("TokenException", "AuthorizationHeaderException");
+                }
+
+                return Task.CompletedTask;
+            },
             OnAuthenticationFailed = context =>
             {
                 context.Response.Headers.Add("TokenException", $"{context.Exception.GetType().Name}");
@@ -45,8 +54,12 @@ app.Use(async (context, next) =>
     {
         var tokenException = context.Response.Headers["TokenException"];
         context.Response.StatusCode = 403;
-        
-        if (tokenException == "SecurityTokenInvalidIssuerException")
+
+        if (tokenException == "AuthorizationHeaderException")
+        {
+            await context.Response.WriteAsync("Authorization header not set");
+        }
+        else if (tokenException == "SecurityTokenInvalidIssuerException")
         {
             await context.Response.WriteAsync("This token with issuer 'Microsoft' doesn't belong to this domain");
         }

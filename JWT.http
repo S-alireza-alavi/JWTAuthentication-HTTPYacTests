@@ -3,7 +3,7 @@
 # Send a GET request without the 'Authorization' header
 GET http://localhost:5000
 ?? status == 403
-# ?? body == Authorization header not set
+?? body == Authorization header not set
 
 ---
 
