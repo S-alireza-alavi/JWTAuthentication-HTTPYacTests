@@ -1,5 +1,4 @@
 using System.IdentityModel.Tokens.Jwt;
-using System.Reflection.Metadata;
 using Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -29,9 +28,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             OnMessageReceived = context =>
             {
                 if (context.Request.Headers["Authorization"].Count == 0)
-                {
                     context.Response.Headers.Add("TokenException", "AuthorizationHeaderException");
-                }
 
                 return Task.CompletedTask;
             },
@@ -41,10 +38,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 if (iatClaim != null && long.TryParse(iatClaim.Value, out long iatTimeStamp))
                 {
                     var iatTime = DateTimeOffset.FromUnixTimeSeconds(iatTimeStamp);
-                    if (iatTime <= new DateTime(2023,11, 01))
-                    {
+                    
+                    if (iatTime <= new DateTime(2023, 11, 01))
                         context.Response.Headers.Add("TokenException", "IatHasPassedException");
-                    }
                 }
                 
                 return Task.CompletedTask;
@@ -61,7 +57,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 var app = builder.Build();
+
 app.UseAuthentication();
+
 app.Use(async (context, next) =>
 {
     if (context.Response.Headers.ContainsKey("TokenException"))
@@ -70,26 +68,19 @@ app.Use(async (context, next) =>
         context.Response.StatusCode = 403;
 
         if (tokenException == "AuthorizationHeaderException")
-        {
             await context.Response.WriteAsync("Authorization header not set");
-        }
+
         else if (tokenException == "IatHasPassedException")
-        {
             await context.Response.WriteAsync("Refresh Token");
-        }
+
         else if (tokenException == "SecurityTokenInvalidIssuerException")
-        {
             await context.Response.WriteAsync("This token with issuer 'Microsoft' doesn't belong to this domain");
-        }
+
         else if (tokenException == "SecurityTokenExpiredException")
-        {
             await context.Response.WriteAsync("Token Expired");
-        }
     }
     else
-    {
         await next();
-    }
 });
 app.UseMiddleware<UserIdMiddleware>();
 
