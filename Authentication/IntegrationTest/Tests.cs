@@ -3,14 +3,14 @@ using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Mvc.Testing;
 using NUnit.Framework;
 
-namespace Test;
+namespace IntegrationTest;
 
 [TestFixture]
 public class Tests
 {
     private WebApplicationFactory<Program> _factory;
     private HttpClient _httpClient;
-    
+
     [SetUp]
     public void Setup()
     {
@@ -26,7 +26,7 @@ public class Tests
     }
 
     [Test]
-    public async Task TestValidIssuer()
+    public async Task ValidIssuer()
     {
         var request = new HttpRequestMessage(HttpMethod.Get, "/");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer",
@@ -34,11 +34,11 @@ public class Tests
 
         var response = await _httpClient.SendAsync(request);
         
-        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
     }
-
+    
     [Test]
-    public async Task TestExpiredToken()
+    public async Task ExpiredToken()
     {
         var request = new HttpRequestMessage(HttpMethod.Get, "/");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer",
@@ -46,7 +46,7 @@ public class Tests
 
         var response = await _httpClient.SendAsync(request);
         
-        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Forbidden));
-        Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo("Token Expired"));
+        Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
+        Assert.AreEqual("Token Expired", await response.Content.ReadAsStringAsync());
     }
 }

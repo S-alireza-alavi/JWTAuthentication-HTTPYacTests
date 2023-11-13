@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authentication", "Authentication\Authentication.csproj", "{81C033C6-508E-4136-84B0-051F12DF54D3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{92C708D6-6213-42C7-BAD1-DEEA3C61C6D8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTest", "IntegrationTest\IntegrationTest.csproj", "{D84F5126-DECE-48B9-9571-8DC462470CE7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -14,9 +14,9 @@ Global
 		{81C033C6-508E-4136-84B0-051F12DF54D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81C033C6-508E-4136-84B0-051F12DF54D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81C033C6-508E-4136-84B0-051F12DF54D3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{92C708D6-6213-42C7-BAD1-DEEA3C61C6D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{92C708D6-6213-42C7-BAD1-DEEA3C61C6D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{92C708D6-6213-42C7-BAD1-DEEA3C61C6D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{92C708D6-6213-42C7-BAD1-DEEA3C61C6D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D84F5126-DECE-48B9-9571-8DC462470CE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D84F5126-DECE-48B9-9571-8DC462470CE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D84F5126-DECE-48B9-9571-8DC462470CE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D84F5126-DECE-48B9-9571-8DC462470CE7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
