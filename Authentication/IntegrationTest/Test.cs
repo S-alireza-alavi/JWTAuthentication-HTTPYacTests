@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace IntegrationTest;
 
 [TestFixture]
-public class Tests
+public class Test
 {
     private WebApplicationFactory<Program> _factory;
     private HttpClient _httpClient;
