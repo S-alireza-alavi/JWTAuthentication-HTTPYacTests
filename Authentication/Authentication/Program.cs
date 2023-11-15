@@ -1,11 +1,25 @@
 using System.IdentityModel.Tokens.Jwt;
 using Authentication;
+using Authentication.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddIdentity<ApplicationUser, IdentityRole<int>>()
+    .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
@@ -23,7 +37,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             }
         };
 
-        JwtBearerEvents jwtBearerEvents = new JwtBearerEvents
+        var jwtBearerEvents = new JwtBearerEvents
         {
             OnMessageReceived = context =>
             {
@@ -34,15 +48,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             },
             OnTokenValidated = context =>
             {
-                var iatClaim = context.Principal.Claims.FirstOrDefault(c => c.Type == "iat");
-                if (iatClaim != null && long.TryParse(iatClaim.Value, out long iatTimeStamp))
-                {
-                    var iatTime = DateTimeOffset.FromUnixTimeSeconds(iatTimeStamp);
-                    
-                    if (iatTime <= new DateTime(2023, 11, 01))
-                        context.Response.Headers.Add("TokenException", "IatHasPassedException");
-                }
+                var iatClaim = context.Principal?.Claims.FirstOrDefault(c => c.Type == "iat");
                 
+                if (iatClaim == null || !long.TryParse(iatClaim.Value, out long iatTimeStamp))
+                    return Task.CompletedTask;
+                
+                var iatTime = DateTimeOffset.FromUnixTimeSeconds(iatTimeStamp);
+                    
+                if (iatTime <= new DateTime(2023, 11, 01))
+                    context.Response.Headers.Add("TokenException", "IatHasPassedException");
+
                 return Task.CompletedTask;
             },
             OnAuthenticationFailed = context =>
@@ -62,18 +77,17 @@ app.UseAuthentication();
 
 app.Use(async (context, next) =>
 {
-    if (context.Response.Headers.ContainsKey("TokenException"))
+    if (context.Response.Headers.TryGetValue("TokenException", out var header))
     {
-        var tokenException = context.Response.Headers["TokenException"];
         context.Response.StatusCode = 403;
 
-        if (tokenException == "AuthorizationHeaderException")
+        if (header == "AuthorizationHeaderException")
             await context.Response.WriteAsync("Authorization header not set");
-        else if (tokenException == "IatHasPassedException")
+        else if (header == "IatHasPassedException")
             await context.Response.WriteAsync("Refresh Token");
-        else if (tokenException == "SecurityTokenInvalidIssuerException")
+        else if (header == "SecurityTokenInvalidIssuerException")
             await context.Response.WriteAsync("This token with issuer 'Microsoft' doesn't belong to this domain");
-        else if (tokenException == "SecurityTokenExpiredException")
+        else if (header == "SecurityTokenExpiredException")
             await context.Response.WriteAsync("Token Expired");
     }
     else
