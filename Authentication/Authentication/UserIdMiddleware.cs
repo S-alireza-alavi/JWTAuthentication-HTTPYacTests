@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 
 namespace Authentication;
@@ -24,11 +23,13 @@ public class UserIdMiddleware
 
                 if (user != null)
                 {
-                    var userJson = JsonSerializer.Serialize(user);
+                    AppContext.CurrentUser = user;
 
-                    context.Response.ContentType = "application/json";
-                    await context.Response.WriteAsync(userJson);
-                    return;
+                    //     var userJson = JsonSerializer.Serialize(user);
+                    //
+                    //     context.Response.ContentType = "application/json";
+                    //     await context.Response.WriteAsync(userJson);
+                    //     return;
                 }
             }
 
