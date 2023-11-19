@@ -37,7 +37,7 @@ builder.Services.AddAuthentication(options =>
             }
         };
 
-        var jwtBearerEvents = new JwtBearerEvents
+        JwtBearerEvents jwtBearerEvents = new JwtBearerEvents
         {
             OnMessageReceived = context =>
             {
@@ -50,13 +50,13 @@ builder.Services.AddAuthentication(options =>
             {
                 var iatClaim = context.Principal?.Claims.FirstOrDefault(c => c.Type == "iat");
                 
-                if (iatClaim == null || !long.TryParse(iatClaim.Value, out long iatTimeStamp))
-                    return Task.CompletedTask;
-                
-                var iatTime = DateTimeOffset.FromUnixTimeSeconds(iatTimeStamp);
+                if (iatClaim != null && long.TryParse(iatClaim.Value, out long iatTimeStamp))
+                {
+                    var iatTime = DateTimeOffset.FromUnixTimeSeconds(iatTimeStamp);
                     
-                if (iatTime <= new DateTime(2023, 11, 01))
-                    context.Response.Headers.Add("TokenException", "IatHasPassedException");
+                    if (iatTime <= new DateTime(2023, 11, 01))
+                        context.Response.Headers.Add("TokenException", "IatHasPassedException");
+                }
 
                 return Task.CompletedTask;
             },
