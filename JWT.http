@@ -44,3 +44,10 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3O
 GET http://localhost:5000
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaXNzIjoiUmF5dmFyeiIsIlVzZXJJRCI6IjEwMDEifQ.3gOITywfQJrzfoBrCF_IMpY-tbHpH1szUY4QvbB2rfs
 ?? status == 200
+
+### Unauthorized User
+# Test Request With an Unauthorized UserID
+GET http://localhost:5000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaXNzIjoiUmF5dmFyeiIsIlVzZXJJRCI6IjEwMDIifQ.XXNdzYzaym1S5wW1Xe0ZHSH5pnztqoNXab0w1czGQsM
+?? status == 403
+?? body == Unauthorized User

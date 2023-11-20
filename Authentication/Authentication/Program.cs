@@ -95,6 +95,7 @@ app.Use(async (context, next) =>
 });
 
 app.UseMiddleware<UserIdMiddleware>();
+app.UseMiddleware<UserAuthorizationMiddleware>();
 
 app.MapGet("/", () => "Hello World!");
 
