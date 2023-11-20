@@ -23,13 +23,7 @@ public class UserIdMiddleware
 
                 if (user != null)
                 {
-                    AppContext.CurrentUser = user;
-
-                    //     var userJson = JsonSerializer.Serialize(user);
-                    //
-                    //     context.Response.ContentType = "application/json";
-                    //     await context.Response.WriteAsync(userJson);
-                    //     return;
+                    ApplicationContext.CurrentUser = user;
                 }
             }
 
