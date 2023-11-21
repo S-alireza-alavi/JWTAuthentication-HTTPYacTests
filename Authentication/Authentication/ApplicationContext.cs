@@ -5,7 +5,5 @@ namespace Authentication;
 public class ApplicationContext
 {
     public static ApplicationUser? CurrentUser { get; set; }
-
-    public static Dictionary<ApplicationUser, IList<string>> UserRoles { get; set; } =
-        new Dictionary<ApplicationUser, IList<string>>();
+    public static IList<string>? CurrentUserRoles { get; set; }
 }
