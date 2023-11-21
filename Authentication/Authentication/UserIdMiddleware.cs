@@ -23,16 +23,13 @@ public class UserIdMiddleware
 
                 var user = await dbContext.Users.FirstOrDefaultAsync(u => u.PhoneNumber == userId);
 
-                if (user != null)
+                if (user != null && user.PhoneNumber != null)
                 {
                     ApplicationContext.CurrentUser = user;
 
                     IList<string> userRoles = await userManager.GetRolesAsync(user);
 
-                    if (user.PhoneNumber != null)
-                    {
-                        ApplicationContext.UserRoles.TryAdd(user.PhoneNumber, userRoles);
-                    }
+                    ApplicationContext.UserRoles[user.PhoneNumber] = userRoles;
                 }
             }
 
