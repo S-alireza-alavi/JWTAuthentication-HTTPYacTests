@@ -31,7 +31,16 @@ public class UserIdMiddleware
                 //Temporary using in this middleware
                 if (user != null)
                 {
-                    var userRoles = await userManager.GetRolesAsync(user);
+                    IList<string> userRoles = await userManager.GetRolesAsync(user);
+                    ApplicationContext.CurrentUserRoles = userRoles;
+
+                    if (ApplicationContext.CurrentUserRoles.Count >= 1)
+                    {
+                        context.Response.StatusCode = 200;
+                        await context.Response.WriteAsync(
+                            $"Hello World ({string.Join(", ", ApplicationContext.CurrentUserRoles)})");
+                        return;
+                    }
                 }
             }
 
