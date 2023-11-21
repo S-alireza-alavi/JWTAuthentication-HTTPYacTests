@@ -1,3 +1,5 @@
+using Authentication.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Authentication;
@@ -11,7 +13,7 @@ public class UserIdMiddleware
         _next = next;
     }
 
-    public async Task Invoke(HttpContext context, ApplicationDbContext dbContext)
+    public async Task Invoke(HttpContext context, ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager)
     {
             var userIdClaim = context.User.Claims.FirstOrDefault(claim => claim.Type == "UserID");
 
@@ -24,6 +26,12 @@ public class UserIdMiddleware
                 if (user != null)
                 {
                     ApplicationContext.CurrentUser = user;
+                }
+
+                //Temporary using in this middleware
+                if (user != null)
+                {
+                    var userRoles = await userManager.GetRolesAsync(user);
                 }
             }
 
