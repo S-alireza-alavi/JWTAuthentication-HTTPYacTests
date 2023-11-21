@@ -56,4 +56,4 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3O
 GET http://localhost:5000
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaXNzIjoiUmF5dmFyeiIsIlVzZXJJRCI6IjEwMDEifQ.3gOITywfQJrzfoBrCF_IMpY-tbHpH1szUY4QvbB2rfs
 ?? status == 200
-?? body == Hello World (Admin, Customer)
+?? body == Hello World! (Admin, Customer)

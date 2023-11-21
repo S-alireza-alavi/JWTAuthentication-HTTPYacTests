@@ -28,10 +28,10 @@ public class UserIdMiddleware
                     ApplicationContext.CurrentUser = user;
 
                     IList<string> userRoles = await userManager.GetRolesAsync(user);
-                    
-                    if(userRoles != null)
+
+                    if (user.PhoneNumber != null)
                     {
-                        ApplicationContext.UserRoles?.Add(user, userRoles);
+                        ApplicationContext.UserRoles.TryAdd(user.PhoneNumber, userRoles);
                     }
                 }
             }
