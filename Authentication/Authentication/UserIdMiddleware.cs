@@ -23,7 +23,7 @@ public class UserIdMiddleware
 
                 var user = await dbContext.Users.FirstOrDefaultAsync(u => u.PhoneNumber == userId);
 
-                if (user != null && user.PhoneNumber != null)
+                if (user != null)
                 {
                     ApplicationContext.CurrentUser = user;
 
