@@ -97,7 +97,15 @@ app.Use(async (context, next) =>
 app.UseMiddleware<UserIdMiddleware>();
 app.UseMiddleware<UserAuthorizationMiddleware>();
 
-app.MapGet("/", () => "Hello World!");
+app.MapGet("/", () =>
+{
+    if (ApplicationContext.CurrentUser != null && ApplicationContext.UserRoles.TryGetValue(ApplicationContext.CurrentUser.PhoneNumber, out IList<string>? userRoles) && userRoles.Count >=1)
+    {
+        return $"Hello World! ({string.Join(", ", userRoles)})";
+    }
+
+    return "Hello World!";
+});
 
 app.Run();
 
