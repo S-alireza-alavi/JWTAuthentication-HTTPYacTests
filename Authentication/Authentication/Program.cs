@@ -102,49 +102,36 @@ app.MapGet("/", () => "Hello World!");
 
 app.MapGet("/GetCurrentUser", async (HttpContext context, ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager) =>
 {
-    var userIdClaim = context.User.Claims.FirstOrDefault(claim => claim.Type == "UserID");
+    var user = ApplicationContext.CurrentUser;
 
-    if (userIdClaim != null)
+    if (user != null)
     {
-        var userId = userIdClaim.Value;
-
-        var user = await dbContext.Users.FirstOrDefaultAsync(u => u.PhoneNumber == userId);
-
-        if (user != null)
-        {
-            ApplicationContext.CurrentUser = user;
-
-            context.Response.StatusCode = 200;
-            await context.Response.WriteAsync(user.UserName);
-            return;
-        }
+        context.Response.StatusCode = 200;
+        await context.Response.WriteAsync(user.UserName);
     }
-
-    context.Response.StatusCode = 404;
-    await context.Response.WriteAsync("User not found");
+    else
+    {
+        context.Response.StatusCode = 404;
+        await context.Response.WriteAsync("User not found");
+    }
 });
 
 app.MapGet("/GetRoles",
     async (HttpContext context, ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager) =>
     {
-        var userIdClaim = context.User.Claims.FirstOrDefault(claim => claim.Type == "UserID");
+        var userRoles = ApplicationContext.UserRoles;
 
-        if (userIdClaim != null)
+        if (userRoles != null)
         {
-            var userId = userIdClaim.Value;
-
-            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.PhoneNumber == userId);
-
-            if (user != null)
-            {
-                var userRoles = await userManager.GetRolesAsync(user);
-                
-                return userRoles;
-            }
+            context.Response.StatusCode = 200;
+            return userRoles;
+        }
+        else
+        {
+            context.Response.StatusCode = 400;
+            await context.Response.WriteAsync("User not found");
         }
 
-        context.Response.StatusCode = 400;
-        await context.Response.WriteAsync("User not found");
         return null;
     });
 
