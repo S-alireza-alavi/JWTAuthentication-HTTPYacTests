@@ -138,16 +138,14 @@ app.MapGet("/GetRoles",
             if (user != null)
             {
                 var userRoles = await userManager.GetRolesAsync(user);
-
-                context.Response.StatusCode = 200;
-                context.Response.ContentType = "application/json";
-                await JsonSerializer.SerializeAsync(context.Response.Body, userRoles);
-                return;
+                
+                return userRoles;
             }
         }
 
         context.Response.StatusCode = 400;
         await context.Response.WriteAsync("User not found");
+        return null;
     });
 
 app.Run();
