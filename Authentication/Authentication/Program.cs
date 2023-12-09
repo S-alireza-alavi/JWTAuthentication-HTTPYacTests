@@ -1,5 +1,4 @@
 using System.IdentityModel.Tokens.Jwt;
-using System.Text.Json;
 using Authentication;
 using Authentication.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -140,8 +139,7 @@ app.MapGet("/GetRoles",
                 var userRoles = await userManager.GetRolesAsync(user);
 
                 context.Response.StatusCode = 200;
-                context.Response.ContentType = "application/json";
-                await JsonSerializer.SerializeAsync(context.Response.Body, userRoles);
+                await context.Response.WriteAsync(string.Join(", ", userRoles));
                 return;
             }
         }
