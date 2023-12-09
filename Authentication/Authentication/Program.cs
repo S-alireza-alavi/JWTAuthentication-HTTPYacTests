@@ -107,6 +107,55 @@ app.MapGet("/", () =>
     return "Hello World!";
 });
 
+app.MapGet("/GetCurrentUser", async (HttpContext context, ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager) =>
+{
+    var userIdClaim = context.User.Claims.FirstOrDefault(claim => claim.Type == "UserID");
+
+    if (userIdClaim != null)
+    {
+        var userId = userIdClaim.Value;
+
+        var user = await dbContext.Users.FirstOrDefaultAsync(u => u.PhoneNumber == userId);
+
+        if (user != null)
+        {
+            ApplicationContext.CurrentUser = user;
+
+            context.Response.StatusCode = 200;
+            await context.Response.WriteAsync(user.UserName);
+            return;
+        }
+    }
+
+    context.Response.StatusCode = 404;
+    await context.Response.WriteAsync("User not found");
+});
+
+app.MapGet("/GetRoles",
+    async (HttpContext context, ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager) =>
+    {
+        var userIdClaim = context.User.Claims.FirstOrDefault(claim => claim.Type == "UserID");
+
+        if (userIdClaim != null)
+        {
+            var userId = userIdClaim.Value;
+
+            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.PhoneNumber == userId);
+
+            if (user != null)
+            {
+                var userRoles = await userManager.GetRolesAsync(user);
+
+                context.Response.StatusCode = 200;
+                await context.Response.WriteAsync(string.Join(", ", userRoles));
+                return;
+            }
+        }
+
+        context.Response.StatusCode = 400;
+        await context.Response.WriteAsync("User not found");
+    });
+
 app.Run();
 
 public partial class Program{}

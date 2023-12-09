@@ -49,4 +49,30 @@ public class Test
         Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
         Assert.AreEqual("Token Expired", await response.Content.ReadAsStringAsync());
     }
+
+    [Test]
+    public async Task GetCurrentUser_ReturnsUserName()
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, "/GetCurrentUser");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaXNzIjoiUmF5dmFyeiIsIlVzZXJJRCI6IjEwMDEifQ.3gOITywfQJrzfoBrCF_IMpY-tbHpH1szUY4QvbB2rfs");
+
+        var response = await _httpClient.SendAsync(request);
+        
+        Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+        Assert.AreEqual("AlirezaAlavi", await response.Content.ReadAsStringAsync());
+    }
+
+    [Test]
+    public async Task GetRoles_ReturnsUserRoles()
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, "/GetRoles");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaXNzIjoiUmF5dmFyeiIsIlVzZXJJRCI6IjEwMDEifQ.3gOITywfQJrzfoBrCF_IMpY-tbHpH1szUY4QvbB2rfs");
+
+        var response = await _httpClient.SendAsync(request);
+        
+        Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+        Assert.AreEqual("Admin, Customer", await response.Content.ReadAsStringAsync());
+    }
 }
