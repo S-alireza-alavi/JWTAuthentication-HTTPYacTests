@@ -97,63 +97,35 @@ app.Use(async (context, next) =>
 app.UseMiddleware<UserIdMiddleware>();
 app.UseMiddleware<UserAuthorizationMiddleware>();
 
-app.MapGet("/", () =>
-{
-    if (ApplicationContext.CurrentUser != null && ApplicationContext.UserRoles.TryGetValue(ApplicationContext.CurrentUser.PhoneNumber, out IList<string>? userRoles) && userRoles.Count >=1)
-    {
-        return $"Hello World! ({string.Join(", ", userRoles)})";
-    }
-
-    return "Hello World!";
-});
+app.MapGet("/", () => "Hello World!");
 
 app.MapGet("/GetCurrentUser", async (HttpContext context, ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager) =>
 {
-    var userIdClaim = context.User.Claims.FirstOrDefault(claim => claim.Type == "UserID");
-
-    if (userIdClaim != null)
+    if (ApplicationContext.CurrentUser != null)
     {
-        var userId = userIdClaim.Value;
-
-        var user = await dbContext.Users.FirstOrDefaultAsync(u => u.PhoneNumber == userId);
-
-        if (user != null)
-        {
-            ApplicationContext.CurrentUser = user;
-
-            context.Response.StatusCode = 200;
-            await context.Response.WriteAsync(user.UserName);
-            return;
-        }
+        await context.Response.WriteAsync(ApplicationContext.CurrentUser.UserName);
     }
-
-    context.Response.StatusCode = 404;
-    await context.Response.WriteAsync("User not found");
+    else
+    {
+        context.Response.StatusCode = 404;
+        await context.Response.WriteAsync("User not found");
+    }
 });
 
 app.MapGet("/GetRoles",
     async (HttpContext context, ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager) =>
     {
-        var userIdClaim = context.User.Claims.FirstOrDefault(claim => claim.Type == "UserID");
-
-        if (userIdClaim != null)
+        if (ApplicationContext.CurrentUser != null)
         {
-            var userId = userIdClaim.Value;
+            var roles = ApplicationContext.UserRoles[ApplicationContext.CurrentUser.PhoneNumber];
 
-            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.PhoneNumber == userId);
-
-            if (user != null)
-            {
-                var userRoles = await userManager.GetRolesAsync(user);
-
-                context.Response.StatusCode = 200;
-                await context.Response.WriteAsync(string.Join(", ", userRoles));
-                return;
-            }
+            return roles;
         }
 
-        context.Response.StatusCode = 400;
-        await context.Response.WriteAsync("User not found");
+        context.Response.StatusCode = 404;
+        await context.Response.WriteAsync("User is null");
+
+        return null;
     });
 
 app.Run();

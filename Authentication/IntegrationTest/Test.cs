@@ -73,6 +73,6 @@ public class Test
         var response = await _httpClient.SendAsync(request);
         
         Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-        Assert.AreEqual("Admin, Customer", await response.Content.ReadAsStringAsync());
+        Assert.AreEqual("[\"Admin\",\"Customer\"]", await response.Content.ReadAsStringAsync());
     }
 }
