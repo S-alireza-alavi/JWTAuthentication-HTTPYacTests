@@ -121,13 +121,10 @@ app.MapGet("/GetRoles",
 
             return roles;
         }
-        else
-        {
-            context.Response.StatusCode = 400;
-            await context.Response.WriteAsync("Roles not found for the user");
-        }
 
+        context.Response.StatusCode = 404;
         await context.Response.WriteAsync("User is null");
+
         return null;
     });
 
