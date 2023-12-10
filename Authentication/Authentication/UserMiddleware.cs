@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Authentication;
 
-public class UserIdMiddleware
+public class UserMiddleware
 {
     private readonly RequestDelegate _next;
     
-    public UserIdMiddleware(RequestDelegate next)
+    public UserMiddleware(RequestDelegate next)
     {
         _next = next;
     }
