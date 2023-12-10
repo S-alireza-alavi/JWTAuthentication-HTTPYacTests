@@ -1,5 +1,4 @@
 using System.IdentityModel.Tokens.Jwt;
-using System.Text.Json;
 using Authentication;
 using Authentication.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -102,12 +101,9 @@ app.MapGet("/", () => "Hello World!");
 
 app.MapGet("/GetCurrentUser", async (HttpContext context, ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager) =>
 {
-    var user = ApplicationContext.CurrentUser;
-
-    if (user != null)
+    if (ApplicationContext.CurrentUser != null)
     {
-        context.Response.StatusCode = 200;
-        await context.Response.WriteAsync(user.UserName);
+        await context.Response.WriteAsync(ApplicationContext.CurrentUser.UserName);
     }
     else
     {
@@ -119,19 +115,19 @@ app.MapGet("/GetCurrentUser", async (HttpContext context, ApplicationDbContext d
 app.MapGet("/GetRoles",
     async (HttpContext context, ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager) =>
     {
-        var userRoles = ApplicationContext.UserRoles;
-
-        if (userRoles != null)
+        if (ApplicationContext.CurrentUser != null)
         {
-            context.Response.StatusCode = 200;
-            return userRoles;
+            var roles = ApplicationContext.UserRoles[ApplicationContext.CurrentUser.PhoneNumber];
+
+            return roles;
         }
         else
         {
             context.Response.StatusCode = 400;
-            await context.Response.WriteAsync("User not found");
+            await context.Response.WriteAsync("Roles not found for the user");
         }
 
+        await context.Response.WriteAsync("User is null");
         return null;
     });
 
