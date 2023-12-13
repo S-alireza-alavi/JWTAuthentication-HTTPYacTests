@@ -43,7 +43,7 @@ builder.Services.AddAuthentication(options =>
             {
                 if (context.Request.Headers["Authorization"].Count == 0)
                     context.Response.Headers.Add("TokenException", "AuthorizationHeaderException");
-
+            
                 return Task.CompletedTask;
             },
             OnTokenValidated = context =>
@@ -99,7 +99,7 @@ app.UseMiddleware<UserAuthorizationMiddleware>();
 
 app.MapGet("/", () => "Hello World!");
 
-app.MapGet("/GetCurrentUser", async (HttpContext context, ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager) =>
+app.MapGet("/GetCurrentUser", async (HttpContext context) =>
 {
     if (ApplicationContext.CurrentUser != null)
     {
@@ -113,7 +113,7 @@ app.MapGet("/GetCurrentUser", async (HttpContext context, ApplicationDbContext d
 });
 
 app.MapGet("/GetRoles",
-    async (HttpContext context, ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager) =>
+    async (HttpContext context) =>
     {
         if (ApplicationContext.CurrentUser != null)
         {
