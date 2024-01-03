@@ -1,4 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Cryptography.X509Certificates;
 using Authentication;
 using Authentication.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -29,12 +30,8 @@ builder.Services.AddAuthentication(options =>
             ValidateAudience = false,
             RequireExpirationTime = false,
             ValidateLifetime = true,
-            ValidateIssuerSigningKey = false,
-            SignatureValidator = (token, parameters) =>
-            {
-                SecurityToken jwtSecurityToken = new JwtSecurityToken(token);
-                return jwtSecurityToken;
-            }
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new X509SecurityKey(new X509Certificate2(@"G:\Repositories\Authentication\Auth.pfx"))
         };
 
         JwtBearerEvents jwtBearerEvents = new JwtBearerEvents

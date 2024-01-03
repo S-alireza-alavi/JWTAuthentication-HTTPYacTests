@@ -68,11 +68,23 @@ public class Test
     {
         var request = new HttpRequestMessage(HttpMethod.Get, "/GetRoles");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaXNzIjoiUmF5dmFyeiIsIlVzZXJJRCI6IjEwMDEifQ.3gOITywfQJrzfoBrCF_IMpY-tbHpH1szUY4QvbB2rfs");
+            "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaXNzIjoiUmF5dmFyeiIsIlVzZXJJRCI6IjEwMDEifQ.buwnGmi-KrCcohWS1_pLVKsgi9v6fvxe-woYmhKOAD-sMXzNLG8H8k-lXWF2YAn7emydxiP8fGhC7dUK8O8Pg6UoQR5u4XNbx210Y-EIK_DAu_T1Vp6yWSTfo_W_i6pxa2nIIRhSge9S1zjIL3luhtZlI0MBSmBYG3NCnqvC_Dy2KxFjAKzbADK4QbbntK841fpihgD8H-WWGcuuw1I_yrV0_M-AgN6ol_te5D8qg9TJZZ1EH9RbBA-abUSOkV39AzEkBH8hQ-3dNN-fkqB6YMFgXwk6ZAAfOaB9iLWqyWM6i0kl1eCcmks278EOO8UFN4ZI3zn-UeZ8sF1h-d10lw");
 
         var response = await _httpClient.SendAsync(request);
         
         Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
         Assert.AreEqual("[\"Admin\",\"Customer\"]", await response.Content.ReadAsStringAsync());
+    }
+
+    [Test]
+    public async Task InvalidKey_Returns403StatusCode()
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, "/");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer",
+            "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaXNzIjoiTWljcm9zb2Z0IiwiaWF0IjoxNTE2MjM5MDIyfQ.cHYgfjTvW-ng8AG2Li5wBcBiwKjrkZI8PCKh32W1qAchCmqBlebV0I5IYgu8ZHLt4pI5rCeZpPU4pCI8jRviXKZexUEg8B4AGHys03nlBx2g_QHJv3XUp-DdR9Zfweag-8YCIr7Mg60Eg7bYNYB44G_F1zXP3D797pQF38O84PT7bYqKopJqcrz_uSfz_BfQd_h5txLxF-Vv0EfatAzG9nVkt5c25BC7mohIp8f2ffS2CPk4D87Um-SN9xJAI4woGyyZPuUvQQfPVWuCZI0I4-lWx5EX8IorgInmDxrU9kXmDZ1GxyXv9-2gwNTGzAv2lxPIq7wIhjZf_KWNHM9P7w");
+
+        var response = await _httpClient.SendAsync(request);
+        
+        Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
     }
 }
