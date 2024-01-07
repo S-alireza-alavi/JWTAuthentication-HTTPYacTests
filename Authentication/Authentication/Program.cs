@@ -60,7 +60,7 @@ builder.Services.AddAuthentication(options =>
             OnAuthenticationFailed = context =>
             {
                 context.Response.Headers.Add("TokenException", $"{context.Exception.GetType().Name}");
-
+            
                 return Task.CompletedTask;
             }
         };
@@ -86,6 +86,8 @@ app.Use(async (context, next) =>
             await context.Response.WriteAsync("This token with issuer 'Microsoft' doesn't belong to this domain");
         else if (header == "SecurityTokenExpiredException")
             await context.Response.WriteAsync("Token Expired");
+        else if (header == "SecurityTokenSignatureKeyNotFoundException")
+            await context.Response.WriteAsync("Signature key not found");
     }
     else
         await next();

@@ -65,7 +65,11 @@ response:
     status: 200
     body: '["Admin", "Customer"]'
 
-###InvalidKey
+### Invalid Key
 GET http://localhost:5000
 Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaXNzIjoiTWljcm9zb2Z0IiwiaWF0IjoxNTE2MjM5MDIyfQ.cHYgfjTvW-ng8AG2Li5wBcBiwKjrkZI8PCKh32W1qAchCmqBlebV0I5IYgu8ZHLt4pI5rCeZpPU4pCI8jRviXKZexUEg8B4AGHys03nlBx2g_QHJv3XUp-DdR9Zfweag-8YCIr7Mg60Eg7bYNYB44G_F1zXP3D797pQF38O84PT7bYqKopJqcrz_uSfz_BfQd_h5txLxF-Vv0EfatAzG9nVkt5c25BC7mohIp8f2ffS2CPk4D87Um-SN9xJAI4woGyyZPuUvQQfPVWuCZI0I4-lWx5EX8IorgInmDxrU9kXmDZ1GxyXv9-2gwNTGzAv2lxPIq7wIhjZf_KWNHM9P7w
 ?? status == 403
+
+### Without Key
+GET http://localhost:5000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
