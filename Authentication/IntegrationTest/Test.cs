@@ -77,7 +77,7 @@ public class Test
     }
 
     [Test]
-    public async Task InvalidKey_Returns403StatusCode()
+    public async Task InvalidSignature()
     {
         var request = new HttpRequestMessage(HttpMethod.Get, "/");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer",

@@ -31,7 +31,7 @@ builder.Services.AddAuthentication(options =>
             RequireExpirationTime = false,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new X509SecurityKey(new X509Certificate2(@"G:\Repositories\Authentication\Auth.pfx"))
+            IssuerSigningKey = new X509SecurityKey(new X509Certificate2(@"..\..\Auth.pfx"))
         };
 
         JwtBearerEvents jwtBearerEvents = new JwtBearerEvents
