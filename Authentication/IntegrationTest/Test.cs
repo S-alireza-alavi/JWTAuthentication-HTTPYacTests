@@ -12,7 +12,7 @@ public class Test
     private HttpClient _httpClient;
 
     [OneTimeSetUp]
-    public void OnTimeSetUp()
+    public void OneTimeSetUp()
     {
         Environment.CurrentDirectory = Path.GetFullPath(@"..\..\..\..\Authentication");
     }
