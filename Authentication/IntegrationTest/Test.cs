@@ -11,6 +11,12 @@ public class Test
     private WebApplicationFactory<Program> _factory;
     private HttpClient _httpClient;
 
+    [OneTimeSetUp]
+    public void OneTimeSetUp()
+    {
+        Environment.CurrentDirectory = Path.GetFullPath(@"..\..\..\..\Authentication");
+    }
+    
     [SetUp]
     public void Setup()
     {
@@ -53,7 +59,6 @@ public class Test
     [Test]
     public async Task GetCurrentUser_ReturnsUserName()
     {
-        Environment.CurrentDirectory = Path.GetFullPath(@"..\..\..\..\Authentication");
         var request = new HttpRequestMessage(HttpMethod.Get, "/GetCurrentUser");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer",
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaXNzIjoiUmF5dmFyeiIsIlVzZXJJRCI6IjEwMDEifQ.3gOITywfQJrzfoBrCF_IMpY-tbHpH1szUY4QvbB2rfs");
@@ -67,7 +72,6 @@ public class Test
     [Test]
     public async Task GetRoles_ReturnsUserRoles()
     {
-        Environment.CurrentDirectory = Path.GetFullPath(@"..\..\..\..\Authentication");
         var request = new HttpRequestMessage(HttpMethod.Get, "/GetRoles");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer",
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaXNzIjoiUmF5dmFyeiIsIlVzZXJJRCI6IjEwMDEifQ.3gOITywfQJrzfoBrCF_IMpY-tbHpH1szUY4QvbB2rfs");
