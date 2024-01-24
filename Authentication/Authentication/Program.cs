@@ -1,4 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Cryptography.X509Certificates;
 using Authentication;
 using Authentication.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -29,12 +30,8 @@ builder.Services.AddAuthentication(options =>
             ValidateAudience = false,
             RequireExpirationTime = false,
             ValidateLifetime = true,
-            ValidateIssuerSigningKey = false,
-            SignatureValidator = (token, parameters) =>
-            {
-                SecurityToken jwtSecurityToken = new JwtSecurityToken(token);
-                return jwtSecurityToken;
-            }
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new X509SecurityKey(new X509Certificate2(@"..\..\Auth.pfx"))
         };
 
         JwtBearerEvents jwtBearerEvents = new JwtBearerEvents
@@ -63,7 +60,7 @@ builder.Services.AddAuthentication(options =>
             OnAuthenticationFailed = context =>
             {
                 context.Response.Headers.Add("TokenException", $"{context.Exception.GetType().Name}");
-
+            
                 return Task.CompletedTask;
             }
         };
@@ -89,6 +86,8 @@ app.Use(async (context, next) =>
             await context.Response.WriteAsync("This token with issuer 'Microsoft' doesn't belong to this domain");
         else if (header == "SecurityTokenExpiredException")
             await context.Response.WriteAsync("Token Expired");
+        else if (header == "SecurityTokenSignatureKeyNotFoundException")
+            await context.Response.WriteAsync("Signature key not found");
     }
     else
         await next();
