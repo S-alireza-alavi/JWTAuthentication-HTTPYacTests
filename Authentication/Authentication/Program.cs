@@ -73,6 +73,10 @@ builder.Services.AddAuthentication(options =>
 
 var app = builder.Build();
 
+app.UseDefaultFiles();
+
+app.UseStaticFiles();
+
 app.UseAuthentication();
 
 app.Use(async (context, next) =>
@@ -98,8 +102,6 @@ app.Use(async (context, next) =>
 
 app.UseMiddleware<UserMiddleware>();
 app.UseMiddleware<UserAuthorizationMiddleware>();
-
-app.MapGet("/", () => "Hello World!");
 
 app.MapGet("/GetCurrentUser", async (HttpContext context) =>
 {
