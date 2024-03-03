@@ -2,7 +2,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Supabase</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1"></script>
+    <script src="./index.js"></script>
 </head>
 <body>
 <div class='container'>
@@ -10,120 +12,23 @@
         <h1>Supabase Auth Example</h1>
     </div>
     <div class='section'>
-        <form id='sign-up'>
-            <h3>Sign Up</h3>
-            <label>Email</label><input type='email' name='email' />
-            <label>Password</label><input type='password' name='password' />
-            <input type='submit'>
-        </form>
-    </div>
-    <div class='section'>
         <form id='log-in'>
             <h3>Log In</h3>
-            <label>Email</label><input type='email' name='email' />
-            <label>Password</label><input type='password' name='password' />
-            <input type='submit'>
+            <label for="log-in-email">Email: </label><input type='email' id="log-in-email" />
+            <label for="log-in-password">Password: </label><input type='password' id="log-in-password" />
+            <button type="button" id="log-in-button" onclick="logInSubmitted()">Login</button>
+        </form>
+    </div>
+    <div class="section">
+        <form id="validate">
+            <h3>Generated Token</h3>
+            <input readonly="readonly" type="text" id="generated-token" /> <small>Default expiry is 60 minutes</small>
         </form>
     </div>
     <div class='section'>
-        <form id='validate'>
-            <h3>Access Token</h3>
-            <input readonly=readonly type='text' id='access-token' /> <small>Default expiry is 60 minutes</small>
-            <h3>Refresh Token</h3>
-            <input readonly=readonly type='text' id='refresh-token' /> <small>Supabase-js will use this to automatically fetch a new accessToken for you every 60 mins whilst the client is running</small>
-        </form>
-    </div>
-    <div class='section'>
-        <h3>Fetch User Details</h3>
-        <button id='user-button'>Fetch</button>
-    </div>
-    <div class='section'>
-        <h3>Logout</h3>
-        <button id='logout-button'>Logout</button>
+        <h3>User Information</h3>
+        <pre id="user-info"></pre>
     </div>
 </div>
-
-<script>
-    var SUPABASE_URL = 'https://zdgocunjwgxchxbxhytu.supabase.co'
-    var SUPABASE_KEY =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpkZ29jdW5qd2d4Y2h4YnhoeXR1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDgyMzA4ODgsImV4cCI6MjAyMzgwNjg4OH0.nczlRY1bsS4_IJfdezci_uLL4tKag2bDgM0qTxDNcOc'
-
-    var supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
-    window.userToken = null
-
-    document.addEventListener('DOMContentLoaded', function (event) {
-        var signUpForm = document.querySelector('#sign-up')
-        signUpForm.onsubmit = signUpSubmitted.bind(signUpForm)
-
-        var logInForm = document.querySelector('#log-in')
-        logInForm.onsubmit = logInSubmitted.bind(logInForm)
-
-        var userDetailsButton = document.querySelector('#user-button')
-        userDetailsButton.onclick = fetchUserDetails.bind(userDetailsButton)
-
-        var logoutButton = document.querySelector('#logout-button')
-        logoutButton.onclick = logoutSubmitted.bind(logoutButton)
-    })
-
-    const signUpSubmitted = (event) => {
-        event.preventDefault()
-        const email = event.target[0].value
-        const password = event.target[1].value
-
-        supabase.auth
-            .signUp({ email, password, data: { confirmation_sent_at: Date.now() } })
-            .then((response) => {
-                response.error ? alert(response.error.message) : setToken(response)
-            })
-            .catch((err) => {
-                alert(err)
-            })
-    }
-
-    const logInSubmitted = (event) => {
-        event.preventDefault()
-        const email = event.target[0].value
-        const password = event.target[1].value
-
-        supabase.auth
-            .signIn({ email, password })
-            .then((response) => {
-                response.error ? alert(response.error.message) : setToken(response)
-            })
-            .catch((err) => {
-                alert(err.response.text)
-            })
-    }
-
-    const fetchUserDetails = () => {
-        alert(JSON.stringify(supabase.auth.user()))
-    }
-
-    const logoutSubmitted = (event) => {
-        event.preventDefault()
-
-        supabase.auth
-            .signOut()
-            .then((_response) => {
-                document.querySelector('#access-token').value = ''
-                document.querySelector('#refresh-token').value = ''
-                alert('Logout successful')
-            })
-            .catch((err) => {
-                alert(err.response.text)
-            })
-    }
-
-    function setToken(response) {
-        if (response.user.confirmation_sent_at && !response?.session?.access_token) {
-            alert('Confirmation Email Sent')
-        } else {
-            document.querySelector('#access-token').value = response.session.access_token
-            document.querySelector('#refresh-token').value = response.session.refresh_token
-            alert('Logged in as ' + response.user.email)
-        }
-    }
-</script>
-
 </body>
 </html>
