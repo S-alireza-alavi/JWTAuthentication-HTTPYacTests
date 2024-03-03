@@ -17,7 +17,6 @@ function logInSubmitted() {
                 setToken(response);
                 setCookie('Token', response.session.access_token);
                 fetchUserDetails();
-                window.location.replace("http://localhost:5000/Auth");
             }
         });
 }
@@ -32,4 +31,8 @@ function setToken (response) {
 
 function setCookie (name, value) {
     document.cookie = name + "=" + encodeURIComponent(value);
+}
+
+function redirect(){
+    window.location.replace("http://localhost:5000/Auth");
 }
