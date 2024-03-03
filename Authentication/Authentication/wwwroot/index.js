@@ -11,11 +11,14 @@ function logInSubmitted() {
     supabase.auth
         .signIn({ email, password })
         .then((response) => {
-            response.error ? alert(response.error.message) : setToken(response);
-            fetchUserDetails();
-        })
-        .catch((err) => {
-            alert(err.response.text);
+            if (response.error) {
+                document.getElementById('generated-token').value = response.error.message;
+            } else {
+                setToken(response);
+                setCookie('Token', response.session.access_token);
+                fetchUserDetails();
+                window.location.replace("http://localhost:5000/Auth");
+            }
         });
 }
 
@@ -23,6 +26,10 @@ function fetchUserDetails () {
     document.getElementById('user-info').innerText = JSON.stringify(supabase.auth.user(), null, 4);
 }
 
-function setToken(response) {
+function setToken (response) {
     document.querySelector('#generated-token').value = response.data.access_token;
+}
+
+function setCookie (name, value) {
+    document.cookie = name + "=" + encodeURIComponent(value);
 }
