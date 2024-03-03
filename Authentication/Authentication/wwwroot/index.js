@@ -20,9 +20,9 @@ function logInSubmitted() {
 }
 
 function fetchUserDetails () {
-    document.getElementById('user-info').innerText = JSON.stringify(supabase.auth.user());
+    document.getElementById('user-info').innerText = JSON.stringify(supabase.auth.user(), null, 4);
 }
 
 function setToken(response) {
-    document.querySelector('#generated-token').value = response.session.access_token
+    document.querySelector('#generated-token').value = response.data.access_token;
 }
