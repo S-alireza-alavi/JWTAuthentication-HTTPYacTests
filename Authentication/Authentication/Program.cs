@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using Authentication;
 using Authentication.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -26,15 +27,26 @@ builder.Services.AddAuthentication(options =>
     })
     .AddJwtBearer(options =>
     {
+        // options.TokenValidationParameters = new TokenValidationParameters
+        // {
+        //     ValidateIssuer = true,
+        //     ValidIssuer = "Rayvarz",
+        //     ValidateAudience = false,
+        //     RequireExpirationTime = false,
+        //     ValidateLifetime = true,
+        //     ValidateIssuerSigningKey = true,
+        //     IssuerSigningKey = new X509SecurityKey(new X509Certificate2(@"..\..\Auth.pfx"))
+        // };
+
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
-            ValidIssuer = "Rayvarz",
+            ValidIssuer = "https://zdgocunjwgxchxbxhytu.supabase.co/auth/v1",
             ValidateAudience = false,
-            RequireExpirationTime = false,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new X509SecurityKey(new X509Certificate2(@"..\..\Auth.pfx"))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Wjt53JJKMvtjNuQQ3zJ369/1H/BgPnRgxQQMXbqK4a3vaiPPC5n9bV9MJB78Spxc5DxKPtmFt9x0ENJuHjr2lQ==")),
+            ClockSkew = TimeSpan.Zero
         };
 
         JwtBearerEvents jwtBearerEvents = new JwtBearerEvents
@@ -77,7 +89,7 @@ app.UseDefaultFiles();
 
 app.UseStaticFiles();
 
-app.UseMiddleware<TokenAuthorizationMiddleware>();
+// app.UseMiddleware<TokenAuthorizationMiddleware>();
 
 app.UseAuthentication();
 
@@ -102,8 +114,8 @@ app.Use(async (context, next) =>
         await next();
 });
 
-app.UseMiddleware<UserMiddleware>();
-app.UseMiddleware<UserAuthorizationMiddleware>();
+// app.UseMiddleware<UserMiddleware>();
+// app.UseMiddleware<UserAuthorizationMiddleware>();
 
 app.MapGet("/GetCurrentUser", async (HttpContext context) =>
 {
@@ -133,6 +145,14 @@ app.MapGet("/GetRoles",
 
         return null;
     });
+
+app.MapGet("/Auth", async (HttpContext context) =>
+{
+    if (context.Response.StatusCode != 404)
+    {
+        await context.Response.WriteAsync("User Authenticated");
+    }
+});
 
 app.Run();
 
