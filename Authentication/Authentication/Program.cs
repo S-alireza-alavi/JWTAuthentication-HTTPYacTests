@@ -45,8 +45,7 @@ builder.Services.AddAuthentication(options =>
             ValidateAudience = false,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Wjt53JJKMvtjNuQQ3zJ369/1H/BgPnRgxQQMXbqK4a3vaiPPC5n9bV9MJB78Spxc5DxKPtmFt9x0ENJuHjr2lQ==")),
-            ClockSkew = TimeSpan.Zero
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Wjt53JJKMvtjNuQQ3zJ369/1H/BgPnRgxQQMXbqK4a3vaiPPC5n9bV9MJB78Spxc5DxKPtmFt9x0ENJuHjr2lQ=="))
         };
 
         JwtBearerEvents jwtBearerEvents = new JwtBearerEvents
@@ -146,13 +145,7 @@ app.MapGet("/GetRoles",
         return null;
     });
 
-app.MapGet("/Auth", async (HttpContext context) =>
-{
-    if (context.Response.StatusCode != 404)
-    {
-        await context.Response.WriteAsync("User Authenticated");
-    }
-});
+app.MapGet("/Auth", async (HttpContext context) => { await context.Response.WriteAsync("User Authenticated"); });
 
 app.Run();
 
