@@ -26,7 +26,9 @@ function fetchUserDetails () {
 }
 
 function setToken (response) {
-    document.querySelector('#generated-token').value = response.data.access_token;
+    const newToken = response.data.access_token;
+    document.querySelector('#generated-token').value = newToken;
+    console.log('New token set on the client side', newToken);
 }
 
 function setCookie (name, value) {
@@ -36,3 +38,29 @@ function setCookie (name, value) {
 function redirect(){
     window.location.replace("http://localhost:5000/Auth");
 }
+
+function isTokenExpired () {
+    const tokenExpiry = localStorage.getItem('supabase.auth.token');
+    const isExpired = tokenExpiry && Date.now() >= tokenExpiry;
+    if (isExpired) {
+        console.log('Access Token has expired');
+    }
+    return isExpired;
+}
+
+async function refreshAccessToken () {
+    const {data, error} = await supabase.auth.refreshSession();
+    if (error) {
+        console.error('Error refreshing session: ', error.message);
+    } else {
+        console.log('Access token refreshed successfully.');
+    }
+}
+
+function ensureValidToken () {
+    if (isTokenExpired()) {
+        refreshAccessToken();
+    }
+}
+
+ensureValidToken();

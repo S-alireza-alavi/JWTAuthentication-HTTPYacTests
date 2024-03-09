@@ -88,7 +88,7 @@ app.UseDefaultFiles();
 
 app.UseStaticFiles();
 
-// app.UseMiddleware<TokenAuthorizationMiddleware>();
+app.UseMiddleware<TokenAuthorizationMiddleware>();
 
 app.UseAuthentication();
 
