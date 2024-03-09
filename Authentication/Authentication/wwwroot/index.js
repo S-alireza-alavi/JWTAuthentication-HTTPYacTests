@@ -57,7 +57,6 @@ function isTokenExpired () {
         console.log(isExpired);
         if (isExpired) {
             console.log('Access Token has expired');
-            const newToken = data.access_token;
             refreshAccessToken();
         }
         return isExpired;
