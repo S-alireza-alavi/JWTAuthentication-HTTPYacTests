@@ -101,7 +101,7 @@ app.Use(async (context, next) =>
         if (header == "AuthorizationHeaderException")
             await context.Response.WriteAsync("Authorization header not set");
         else if (header == "IatHasPassedException")
-            await context.Response.WriteAsync("Refresh Token");
+            await next();
         else if (header == "SecurityTokenInvalidIssuerException")
             await context.Response.WriteAsync("This token with issuer 'Microsoft' doesn't belong to this domain");
         else if (header == "SecurityTokenExpiredException")
@@ -145,7 +145,20 @@ app.MapGet("/GetRoles",
         return null;
     });
 
-app.MapGet("/Auth", async (HttpContext context) => { await context.Response.WriteAsync("User Authenticated"); });
+app.MapGet("/Auth", (HttpContext context) =>
+{
+    var refreshToken = false;
+    
+    if (context.Response.Headers.TryGetValue("TokenException", out var headerException))
+    {
+        if (headerException == "IatHasPassedException")
+        {
+            refreshToken = true;
+        }
+    }
+    
+    context.Response.Redirect($"http://localhost:5000?refreshToken={refreshToken}");
+});
 
 app.Run();
 

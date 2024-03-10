@@ -25,12 +25,6 @@ function fetchUserDetails () {
     document.getElementById('user-info').innerText = JSON.stringify(supabase.auth.user(), null, 4);
 }
 
-function setToken (response) {
-    const newToken = response.data.access_token;
-    document.querySelector('#generated-token').value = newToken;
-    console.log('New token set on the client side', newToken);
-}
-
 function setCookie (name, value) {
     document.cookie = name + "=" + encodeURIComponent(value);
 }
@@ -39,23 +33,50 @@ function redirect(){
     window.location.replace("http://localhost:5000/Auth");
 }
 
+// function isTokenExpired () {
+//
+//     try {
+//         const token = localStorage.getItem('supabase.auth.token');
+//         if (!token) {
+//             console.log('Access token not found');
+//             return true;
+//         }
+//
+//         const decodedToken = JSON.parse(atob(token.split('.')[1]));
+//         const tokenExpiry = new Date(decodedToken.exp * 1000);
+//
+//         const isExpired = Date.now() >= tokenExpiry;
+//         console.log(isExpired);
+//         if (isExpired) {
+//             console.log('Access Token has expired');
+//             refreshAccessToken();
+//         }
+//         return isExpired;
+//     } catch (error) {
+//         console.error('Error getting the token: ', error);
+//         return true;
+//     }
+// }
+
 function isTokenExpired () {
     
+        var urlParams = new URLSearchParams(window.location.search);
+        var refreshTokenValue = urlParams.get('refreshToken');
+
     try {
         const token = localStorage.getItem('supabase.auth.token');
         if (!token) {
             console.log('Access token not found');
             return true;
         }
-        
+
         const decodedToken = JSON.parse(atob(token.split('.')[1]));
         const tokenExpiry = new Date(decodedToken.exp * 1000);
-        
         const specificDate = new Date('2020-01-01');
-        
         const isExpired = specificDate <= tokenExpiry;
+        
         console.log(isExpired);
-        if (isExpired) {
+        if (isExpired && refreshTokenValue === "True") {
             console.log('Access Token has expired');
             refreshAccessToken();
         }
@@ -67,15 +88,23 @@ function isTokenExpired () {
 }
 
 async function refreshAccessToken () {
-    const {data, error} = await supabase.auth.refreshSession();
+    const { data, error } = await supabase.auth.refreshSession();
     if (error) {
         console.error('Error refreshing session: ', error.message);
     } else {
         console.log('Access token refreshed successfully.');
         const newToken = data.access_token;
         setCookie('Token', newToken);
-        setTokenValue(newToken);
+        setToken(data);
     }
+}
+
+function setToken () {
+    const session = supabase.auth.session()
+    var newToken = session.access_token;
+    console.log(newToken);
+    document.querySelector('#generated-token').value = newToken;
+    console.log('New token set on the client side', newToken);
 }
 
 function setTokenValue (token) {
