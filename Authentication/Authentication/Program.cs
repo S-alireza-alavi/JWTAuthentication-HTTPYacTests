@@ -65,7 +65,7 @@ builder.Services.AddAuthentication(options =>
                 {
                     var iatTime = DateTimeOffset.FromUnixTimeSeconds(iatTimeStamp);
                     
-                    if (iatTime <= new DateTime(2023, 11, 01))
+                    if (iatTime <= new DateTime(2023, 11, 01) || File.Exists("./RefreshToken.txt"))
                         context.Response.Headers.Add("TokenException", "IatHasPassedException");
                 }
 
@@ -101,7 +101,10 @@ app.Use(async (context, next) =>
         if (header == "AuthorizationHeaderException")
             await context.Response.WriteAsync("Authorization header not set");
         else if (header == "IatHasPassedException")
+        {
+            // await context.Response.WriteAsync("Refresh Token");
             await next();
+        }
         else if (header == "SecurityTokenInvalidIssuerException")
             await context.Response.WriteAsync("This token with issuer 'Microsoft' doesn't belong to this domain");
         else if (header == "SecurityTokenExpiredException")
@@ -113,8 +116,8 @@ app.Use(async (context, next) =>
         await next();
 });
 
-// app.UseMiddleware<UserMiddleware>();
-// app.UseMiddleware<UserAuthorizationMiddleware>();
+app.UseMiddleware<UserMiddleware>();
+app.UseMiddleware<UserAuthorizationMiddleware>();
 
 app.MapGet("/GetCurrentUser", async (HttpContext context) =>
 {
@@ -145,10 +148,10 @@ app.MapGet("/GetRoles",
         return null;
     });
 
-app.MapGet("/Auth", (HttpContext context) =>
+app.MapGet("/Auth", async (HttpContext context) =>
 {
     var refreshToken = false;
-    
+
     if (context.Response.Headers.TryGetValue("TokenException", out var headerException))
     {
         if (headerException == "IatHasPassedException")
@@ -156,8 +159,15 @@ app.MapGet("/Auth", (HttpContext context) =>
             refreshToken = true;
         }
     }
-    
-    context.Response.Redirect($"http://localhost:5000?refreshToken={refreshToken}");
+
+    if (refreshToken)
+    {
+        context.Response.Redirect($"http://localhost:5000?refreshToken={refreshToken}");
+    }
+    else
+    {
+        await context.Response.WriteAsync("User Authenticated");
+    }
 });
 
 app.Run();
