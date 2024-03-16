@@ -4,21 +4,27 @@ var SUPABASE_KEY =
 
 var supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
 
-function logInSubmitted() {
+async function logInSubmitted () {
     const email = document.getElementById('log-in-email').value;
     const password = document.getElementById('log-in-password').value;
 
-    supabase.auth
-        .signIn({ email, password })
-        .then((response) => {
-            if (response.error) {
-                document.getElementById('generated-token').value = response.error.message;
-            } else {
-                setToken(response);
-                setCookie('Token', response.session.access_token);
-                fetchUserDetails();
-            }
-        });
+    const { user, session, error} = await supabase.auth.signIn({
+        email: email,
+        password: password
+    })
+
+    if (error) {
+        document.getElementById('generated-token').value = 'Error logging in: ' + error.message;
+        console.error('Error logging in:', error)
+    }
+
+    setToken(session.access_token);
+    setCookie('Token', session.access_token);
+    fetchUserDetails();
+    
+    // The initial access token and refresh token
+    console.log('Initial Access Token:', session.access_token)
+    console.log('Initial Refresh Token:', session.refresh_token)
 }
 
 function fetchUserDetails () {
@@ -34,27 +40,27 @@ function redirect(){
 }
 
 function isTokenExpired () {
-    
-        var urlParams = new URLSearchParams(window.location.search);
-        var refreshTokenValue = urlParams.get('refreshToken');
+    var urlParams = new URLSearchParams(window.location.search);
+    var refreshTokenValue = urlParams.get('refreshToken');
 
     try {
-        const token = localStorage.getItem('supabase.auth.token');
-        if (!token) {
-            console.log('Access token not found');
+        const session = supabase.auth.session()
+        if (!session) {
+            console.log('No active session');
             return true;
         }
 
-        const decodedToken = JSON.parse(atob(token.split('.')[1]));
+        const decodedToken = JSON.parse(atob(session.access_token.split('.')[1]))
         const tokenExpiry = new Date(decodedToken.exp * 1000);
-        // const isExpired = Date.now() >= tokenExpiry;
-        const specificDate = new Date('2020-01-01');
-        const isExpired = specificDate <= tokenExpiry;
-        
-        console.log(isExpired);
+        const isExpired = Date.now() >= tokenExpiry;
+        // const specificDate = new Date('2020-01-01')
+        // const isExpired = specificDate <= tokenExpiry
+
+        console.log('Is token expired: ', isExpired)
+
         if (isExpired || refreshTokenValue === "True") {
-            console.log('Access Token has expired');
-            refreshAccessToken();
+            console.log('Access Token has expired')
+            refreshAccessToken(session.refresh_token)
         }
         return isExpired;
     } catch (error) {
@@ -63,29 +69,30 @@ function isTokenExpired () {
     }
 }
 
-async function refreshAccessToken () {
-    const { data, error } = await supabase.auth.refreshSession();
+async function refreshAccessToken (refreshToken) {
+    const {data, error} = await supabase.auth.refreshSession(refreshToken)
+
     if (error) {
-        console.error('Error refreshing session: ', error.message);
+        console.error('Error refreshing session: ', error)
     } else {
+        // The new access token and refresh token
         console.log('Access token refreshed successfully.');
-        const newToken = data.access_token;
-        setCookie('Token', newToken);
-        setToken(data);
+        setCookie('Token', data.access_token);
+        setToken(data.access_token);
+        console.log('New Access Token:', data.access_token);
+        console.log('New Refresh Token:', data.refresh_token);
     }
 }
 
-function setToken () {
-    const session = supabase.auth.session()
-    var newToken = session.access_token;
-    console.log(newToken);
-    document.querySelector('#generated-token').value = newToken;
-    console.log('New token set on the client side', newToken);
+function setToken (token) {
+    console.log('New token set on the client side', token);
+    document.querySelector('#generated-token').value = token;
 }
 
 function ensureValidToken () {
     if (isTokenExpired()) {
-        refreshAccessToken();
+        const session = supabase.auth.session();
+        refreshAccessToken(session.refresh_token)
     }
 }
 
