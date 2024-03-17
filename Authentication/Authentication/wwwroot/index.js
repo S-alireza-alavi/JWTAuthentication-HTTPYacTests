@@ -97,3 +97,35 @@ function ensureValidToken () {
 }
 
 ensureValidToken();
+
+function getProducts() {
+    axios.get("http://localhost:5000/Products")
+        .then(function (response) {
+            const products = response.data;
+
+            if (response.data === 'Token Expired'){
+                const session = supabase.auth.session();
+                supabase.auth.refreshSession(session.refresh_token)
+                    .then(function (result, error) {
+                        var newAccessToken = result.data.access_token
+                        console.log('New Access Token: ', newAccessToken)
+                        setCookie('Token', result.data.access_token);
+                        setToken(result.data.access_token);
+                        console.log('new session.access_token: ', session.access_token)
+                        // Show the products retrieved initially
+                        axios.get("http://localhost:5000/Products")
+                            .then(function (refreshedResponse) {
+                                const refreshedProducts = refreshedResponse.data;
+                                console.log('GET Products after token refresh: ', refreshedProducts);
+                            })
+                    })
+                    .catch(function (error) {
+                        console.error('Error refreshing session: ', error);
+                    })
+            } else {
+                const session = supabase.auth.session();
+                console.log('new session.access_token: ', session.access_token)
+                console.log(`GET Products: `, products);
+            }
+        })
+}

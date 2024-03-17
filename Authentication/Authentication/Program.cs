@@ -96,7 +96,7 @@ app.Use(async (context, next) =>
 {
     if (context.Response.Headers.TryGetValue("TokenException", out var header))
     {
-        context.Response.StatusCode = 403;
+        // context.Response.StatusCode = 403;
 
         if (header == "AuthorizationHeaderException")
             await context.Response.WriteAsync("Authorization header not set");
@@ -168,6 +168,18 @@ app.MapGet("/Auth", async (HttpContext context) =>
     {
         await context.Response.WriteAsync("User Authenticated");
     }
+});
+
+app.MapGet("/Products", () =>
+{
+    var products = new[]
+    {
+        new { Id = 1, Name = "Product 1", Price = 10.99 },
+        new { Id = 2, Name = "Product 2", Price = 19.99 },
+        new { Id = 3, Name = "Product 3", Price = 24.99 }
+    };
+
+    return Results.Ok(products);
 });
 
 app.Run();
