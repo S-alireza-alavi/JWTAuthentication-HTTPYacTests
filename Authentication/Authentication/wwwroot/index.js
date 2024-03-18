@@ -101,7 +101,14 @@ function ensureValidToken () {
 function getProducts() {
     axios.get("/Products")
         .then(function (response) {
-            if (response.data === 'Token Expired'){
+                const products = response.data;
+                const session = supabase.auth.session();
+                console.log('new session.access_token: ', session.access_token)
+                console.log(`GET Products: `, products);
+        })
+        .catch(function (error) {
+            console.error('Error getting products: ', error)
+            if (error.response.status === 403 && error.response.data === 'Token Expired') {
                 const session = supabase.auth.session();
                 supabase.auth.refreshSession(session.refresh_token)
                     .then(function (result) {
@@ -111,7 +118,7 @@ function getProducts() {
                         setToken(newAccessToken);
                         console.log('new session.access_token: ', session.access_token)
                         // Show the products retrieved initially
-                        axios.get("http://localhost:5000/Products")
+                        axios.get("/Products")
                             .then(function (refreshedResponse) {
                                 const refreshedProducts = refreshedResponse.data;
                                 console.log('GET Products after token refresh: ', refreshedProducts);
@@ -120,14 +127,6 @@ function getProducts() {
                     .catch(function (error) {
                         console.error('Error refreshing session: ', error);
                     })
-            } else {
-                const products = response.data;
-                const session = supabase.auth.session();
-                console.log('new session.access_token: ', session.access_token)
-                console.log(`GET Products: `, products);
             }
-        })
-        .catch(function (error) {
-            console.error('Error getting products: ', error)
         })
 }

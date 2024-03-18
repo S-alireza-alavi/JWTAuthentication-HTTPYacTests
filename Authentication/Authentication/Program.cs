@@ -96,7 +96,7 @@ app.Use(async (context, next) =>
 {
     if (context.Response.Headers.TryGetValue("TokenException", out var header))
     {
-        // context.Response.StatusCode = 403;
+        context.Response.StatusCode = 403;
 
         if (header == "AuthorizationHeaderException")
             await context.Response.WriteAsync("Authorization header not set");
