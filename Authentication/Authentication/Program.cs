@@ -1,5 +1,4 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using Authentication;
 using Authentication.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -29,12 +28,11 @@ builder.Services.AddAuthentication(options =>
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
-            ValidIssuer = "Rayvarz",
+            ValidIssuer = "https://zdgocunjwgxchxbxhytu.supabase.co/auth/v1",
             ValidateAudience = false,
-            RequireExpirationTime = false,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new X509SecurityKey(new X509Certificate2(@"..\..\Auth.pfx"))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Wjt53JJKMvtjNuQQ3zJ369/1H/BgPnRgxQQMXbqK4a3vaiPPC5n9bV9MJB78Spxc5DxKPtmFt9x0ENJuHjr2lQ=="))
         };
 
         JwtBearerEvents jwtBearerEvents = new JwtBearerEvents
@@ -54,7 +52,7 @@ builder.Services.AddAuthentication(options =>
                 {
                     var iatTime = DateTimeOffset.FromUnixTimeSeconds(iatTimeStamp);
                     
-                    if (iatTime <= new DateTime(2023, 11, 01))
+                    if (iatTime <= new DateTime(2023, 11, 01) || File.Exists("./RefreshToken.txt"))
                         context.Response.Headers.Add("TokenException", "IatHasPassedException");
                 }
 
@@ -73,18 +71,25 @@ builder.Services.AddAuthentication(options =>
 
 var app = builder.Build();
 
+app.UseDefaultFiles();
+
+app.UseStaticFiles();
+
 app.UseAuthentication();
 
 app.Use(async (context, next) =>
 {
     if (context.Response.Headers.TryGetValue("TokenException", out var header))
     {
-        context.Response.StatusCode = 403;
+        // context.Response.StatusCode = 403;
 
         if (header == "AuthorizationHeaderException")
             await context.Response.WriteAsync("Authorization header not set");
         else if (header == "IatHasPassedException")
-            await context.Response.WriteAsync("Refresh Token");
+        {
+            // await context.Response.WriteAsync("Refresh Token");
+            await next();
+        }
         else if (header == "SecurityTokenInvalidIssuerException")
             await context.Response.WriteAsync("This token with issuer 'Microsoft' doesn't belong to this domain");
         else if (header == "SecurityTokenExpiredException")
@@ -98,8 +103,6 @@ app.Use(async (context, next) =>
 
 app.UseMiddleware<UserMiddleware>();
 app.UseMiddleware<UserAuthorizationMiddleware>();
-
-app.MapGet("/", () => "Hello World!");
 
 app.MapGet("/GetCurrentUser", async (HttpContext context) =>
 {
@@ -129,6 +132,19 @@ app.MapGet("/GetRoles",
 
         return null;
     });
+
+app.MapPost("/reset-password", async (HttpContext context) =>
+{
+    if (!context.Request.Headers.ContainsKey("Authorization"))
+    {
+        context.Response.StatusCode = 403;
+        await context.Response.WriteAsync("CHI");
+        return;
+    }
+
+    context.Response.StatusCode = 200;
+    await context.Response.WriteAsync("{ \"message\": \"Password reset successful\" }");
+});
 
 app.Run();
 

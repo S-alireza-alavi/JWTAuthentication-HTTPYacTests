@@ -1,0 +1,36 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Supabase</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.7/dist/axios.min.js"></script>
+    <script src="./index.js"></script>
+</head>
+<body>
+<div class='container'>
+    <div class='section'>
+        <h1>Supabase Auth Example</h1>
+    </div>
+    <div class='section'>
+        <form id='log-in'>
+            <h3>Log In</h3>
+            <label for="log-in-email">Email: </label><input type='email' id="log-in-email" />
+            <label for="log-in-password">Password: </label><input type='password' id="log-in-password" />
+            <button type="button" id="log-in-button" onclick="logInSubmitted()">Login</button>
+            <button type="button" id="reset-password-button" onclick="resetPassword()">Reset Password</button>
+        </form>
+    </div>
+    <div class="section">
+        <form id="validate">
+            <h3>Generated Token</h3>
+            <textarea readonly="readonly" type="text" id="generated-token" rows="6" style="width: 100%"></textarea>
+        </form>
+    </div>
+    <div class='section'>
+        <h3>User Information</h3>
+        <pre id="user-info"></pre>
+    </div>
+</div>
+</body>
+</html>
