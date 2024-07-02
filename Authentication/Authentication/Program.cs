@@ -130,6 +130,33 @@ app.MapGet("/GetRoles",
         return null;
     });
 
+app.MapPost("/ResetPassword", async (HttpContext context) =>
+{
+    if (!context.Request.Headers.ContainsKey("Authorization"))
+    {
+        context.Response.StatusCode = 403;
+        await context.Response.WriteAsync("You are not authorized");
+        return;
+    }
+
+    if (ApplicationContext.CurrentUser == null)
+    {
+        context.Response.StatusCode = 403;
+        await context.Response.WriteAsync("Invalid token");
+        return;
+    }
+
+    var currentUserId = ApplicationContext.CurrentUser.PhoneNumber;
+    var userIdFromQueryString = context.Request.Query["UserId"].ToString();
+    if (userIdFromQueryString != currentUserId)
+    {
+        context.Response.StatusCode = 403;
+        await context.Response.WriteAsync("You are not authorized to reset this password");
+        return;
+    }
+    await context.Response.WriteAsync("Password reset request is valid");
+});
+
 app.Run();
 
 public partial class Program{}
