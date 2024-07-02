@@ -76,3 +76,9 @@ GET http://localhost:5000
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
 ?? status == 403
 ?? body == Signature key not found
+
+### Reset Password
+GET http://localhost:5000/ResetPassword?UserId=1001
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaXNzIjoiUmF5dmFyeiIsIlVzZXJJRCI6IjEwMDEifQ.buwnGmi-KrCcohWS1_pLVKsgi9v6fvxe-woYmhKOAD-sMXzNLG8H8k-lXWF2YAn7emydxiP8fGhC7dUK8O8Pg6UoQR5u4XNbx210Y-EIK_DAu_T1Vp6yWSTfo_W_i6pxa2nIIRhSge9S1zjIL3luhtZlI0MBSmBYG3NCnqvC_Dy2KxFjAKzbADK4QbbntK841fpihgD8H-WWGcuuw1I_yrV0_M-AgN6ol_te5D8qg9TJZZ1EH9RbBA-abUSOkV39AzEkBH8hQ-3dNN-fkqB6YMFgXwk6ZAAfOaB9iLWqyWM6i0kl1eCcmks278EOO8UFN4ZI3zn-UeZ8sF1h-d10lw
+?? status == 200
+?? body == Password reset request is valid

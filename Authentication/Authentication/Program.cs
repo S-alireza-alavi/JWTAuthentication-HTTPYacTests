@@ -130,15 +130,8 @@ app.MapGet("/GetRoles",
         return null;
     });
 
-app.MapPost("/ResetPassword", async (HttpContext context) =>
+app.MapGet("/ResetPassword", async (HttpContext context) =>
 {
-    if (!context.Request.Headers.ContainsKey("Authorization"))
-    {
-        context.Response.StatusCode = 403;
-        await context.Response.WriteAsync("You are not authorized");
-        return;
-    }
-
     if (ApplicationContext.CurrentUser == null)
     {
         context.Response.StatusCode = 403;
